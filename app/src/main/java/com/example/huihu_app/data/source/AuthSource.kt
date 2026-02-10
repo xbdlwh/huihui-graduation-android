@@ -9,5 +9,5 @@ import retrofit2.http.POST
 
 interface AuthSource {
     @POST("/auth/login")
-    suspend fun login(@Body request: UserNamePasswordAuthentication): ApiResponse<CurrentUser?>
+    suspend fun login(@Body request: UserNamePasswordAuthentication): ApiResponse<CurrentUser>
 }

@@ -8,10 +8,10 @@ private const val TAG = "ApiResponse"
 data class ApiResponse<T>(
     val code: Int,
     val message: String,
-    val data: T
+    val data: T?
 ) {
     companion object {
-        fun <T> from(e: Throwable): ApiResponse<T?> {
+        fun <T> from(e: Throwable): ApiResponse<T> {
             Log.e(TAG, "from: ${e.toString()}")
             return ApiResponse(-1, e.message ?: "Unknown Error", null)
         }

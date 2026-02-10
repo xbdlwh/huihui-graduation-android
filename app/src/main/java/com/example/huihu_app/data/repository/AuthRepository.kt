@@ -9,7 +9,7 @@ import com.example.huihu_app.state.AuthState
 class AuthRepository(
     val authSource: AuthSource,
 ) {
-    suspend fun login(userName: String, password: String): ApiResponse<CurrentUser?> =
+    suspend fun login(userName: String, password: String): ApiResponse<CurrentUser> =
         runCatching {
             authSource.login(UserNamePasswordAuthentication(userName, password))
         }.getOrElse {

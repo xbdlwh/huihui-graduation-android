@@ -44,7 +44,8 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                     LoginScreen()
                 }
                 entry<Nav.Home>() {
-                    HomeScreen()
+                    (authState as AuthState.Authenticated).currentUser
+                    HomeScreen((authState as AuthState.Authenticated).currentUser)
                 }
                 entry<Nav.Splash>() {
                     SplashScreen()
