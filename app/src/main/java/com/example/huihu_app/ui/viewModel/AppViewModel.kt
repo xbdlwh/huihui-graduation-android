@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.stateIn
 class AppViewModel(
     localStoreRepository: LocalStoreRepository
 ): ViewModel() {
-    val authState = localStoreRepository.currentUser.stateIn(
+    val authState = localStoreRepository.authState.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = AuthState.Loading

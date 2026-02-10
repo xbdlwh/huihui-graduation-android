@@ -15,7 +15,6 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.example.huihu_app.Nav
-import com.example.huihu_app.data.model.CurrentUser
 import com.example.huihu_app.state.AuthState
 import com.example.huihu_app.ui.AppViewModelProvider
 import com.example.huihu_app.ui.viewModel.AppViewModel
@@ -26,7 +25,7 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
     val authState by viewModel.authState.collectAsStateWithLifecycle(Nav.Splash)
 
     val backStack = rememberNavBackStack()
-    var currentUser by rememberSaveable { mutableStateOf<CurrentUser?>(null) }
+    var authToken by rememberSaveable { mutableStateOf<String?>(null) }
 
     LaunchedEffect(authState) {
         backStack.clear()
@@ -38,7 +37,7 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                 backStack.add(Nav.Login)
             }
             is AuthState.Authenticated -> {
-                currentUser = (authState as AuthState.Authenticated).currentUser
+                authToken = (authState as AuthState.Authenticated).token
                 backStack.add(Nav.Home)
             }
         }
@@ -65,7 +64,7 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                     )
                 }
                 entry<Nav.Home>() {
-                    HomeScreen(currentUser!!)
+                    HomeScreen(authToken!!)
                 }
                 entry<Nav.Splash>() {
                     SplashScreen()

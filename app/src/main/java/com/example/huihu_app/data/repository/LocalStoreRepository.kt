@@ -4,10 +4,8 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.huihu_app.data.model.CurrentUser
 import com.example.huihu_app.state.AuthState
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.Json
 
 private const val USER_PREFERENCES_NAME = "user_preferences"
 
@@ -18,21 +16,21 @@ private val Context.dataStore by preferencesDataStore(
 class LocalStoreRepository(context: Context) {
     private val dataStore = context.dataStore
     companion object {
-        val CURRENT_USER = stringPreferencesKey("current_user")
+        val AUTH_TOKEN = stringPreferencesKey("auth_token")
     }
 
-    val currentUser = dataStore.data.map {
-         if (it[CURRENT_USER] == null) {
+    val authState = dataStore.data.map {
+         if (it[AUTH_TOKEN] == null) {
              AuthState.UnAuthenticated
         }else {
-             AuthState.Authenticated(Json.decodeFromString<CurrentUser>(it[CURRENT_USER]!!))
+             AuthState.Authenticated(it[AUTH_TOKEN]!!)
         }
     }
 
-    suspend fun saveCurrentUser(currentUser: CurrentUser) {
-        dataStore.edit { it[CURRENT_USER] = Json.encodeToString(currentUser) }
+    suspend fun saveToken(token: String) {
+        dataStore.edit { it[AUTH_TOKEN] = token }
     }
     suspend fun logout() {
-        dataStore.edit { it.remove(CURRENT_USER) }
+        dataStore.edit { it.remove(AUTH_TOKEN) }
     }
 }
