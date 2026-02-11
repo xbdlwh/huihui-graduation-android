@@ -38,7 +38,11 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
             }
             is AuthState.Authenticated -> {
                 authToken = (authState as AuthState.Authenticated).token
-                backStack.add(Nav.Home)
+                if ((authState as AuthState.Authenticated).isNewUser) {
+                    backStack.add(Nav.NewPerson)
+                } else {
+                    backStack.add(Nav.Home)
+                }
             }
         }
     }
@@ -65,6 +69,9 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                 }
                 entry<Nav.Home>() {
                     HomeScreen(authToken!!)
+                }
+                entry<Nav.NewPerson>() {
+                    NewPersonScreen()
                 }
                 entry<Nav.Splash>() {
                     SplashScreen()

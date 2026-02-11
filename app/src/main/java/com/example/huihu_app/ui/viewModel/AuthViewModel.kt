@@ -30,7 +30,7 @@ class AuthViewModel(
         viewModelScope.launch {
             val res = authRepository.login(userName,password)
             if (res.isSuccess()) {
-                localStoreRepository.saveToken(res.data!!.token)
+                localStoreRepository.saveToken(res.data!!.token, isNewUser = false)
             }else {
                 _uiState.update {
                     it.copy(error =  res.message)
@@ -49,7 +49,7 @@ class AuthViewModel(
         viewModelScope.launch {
             val res = authRepository.register(email, userName, password)
             if (res.isSuccess()) {
-                localStoreRepository.saveToken(res.data!!.token)
+                localStoreRepository.saveToken(res.data!!.token, isNewUser = true)
             } else {
                 _uiState.update {
                     it.copy(error = res.message)

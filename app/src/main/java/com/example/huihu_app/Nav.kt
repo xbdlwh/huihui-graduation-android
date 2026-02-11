@@ -9,6 +9,8 @@ sealed interface Nav {
     @Serializable
     object Register: Nav, NavKey
     @Serializable
+    object NewPerson: Nav, NavKey
+    @Serializable
     object Home: Nav, NavKey
     @Serializable
     object Splash: Nav, NavKey
