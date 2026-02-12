@@ -68,7 +68,7 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                     )
                 }
                 entry<Nav.Home>() {
-                    HomeScreen(authToken!!)
+                    HomeScreen()
                 }
                 entry<Nav.NewPerson>() {
                     NewPersonScreen(authToken!!)
