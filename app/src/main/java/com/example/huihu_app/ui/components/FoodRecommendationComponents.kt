@@ -1,6 +1,7 @@
 package com.example.huihu_app.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,9 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,7 +28,13 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -206,6 +215,100 @@ fun FoodLoadingCard(modifier: Modifier = Modifier) {
                     .clip(RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colorScheme.surfaceContainerHighest)
             )
+        }
+    }
+}
+
+@Composable
+fun TodayFoodCard(
+    food: Food,
+    isCelebrating: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val pulse = if (isCelebrating) {
+        val transition = rememberInfiniteTransition(label = "gold_pulse")
+        val animated by transition.animateFloat(
+            initialValue = 0.35f,
+            targetValue = 0.95f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(950),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "gold_alpha"
+        )
+        animated
+    } else {
+        0f
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .then(
+                if (isCelebrating) {
+                    Modifier.border(
+                        width = 2.dp,
+                        color = Color(0xFFFFD54F).copy(alpha = pulse),
+                        shape = RoundedCornerShape(24.dp)
+                    )
+                } else {
+                    Modifier
+                }
+            )
+            .padding(2.dp)
+    ) {
+        FoodCardContent(food = food)
+        if (isCelebrating) {
+            AssistChip(
+                onClick = {},
+                enabled = false,
+                label = { Text("Today's pick") },
+                leadingIcon = { Icon(Icons.Filled.AutoAwesome, contentDescription = null) },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(12.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun TodayFoodActionBar(
+    onThatsIt: () -> Unit,
+    onChangeIt: () -> Unit,
+    onDontLikeIt: () -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Button(
+            onClick = onThatsIt,
+            enabled = enabled,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("That's it")
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            OutlinedButton(
+                onClick = onChangeIt,
+                enabled = enabled,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Change it")
+            }
+            OutlinedButton(
+                onClick = onDontLikeIt,
+                enabled = enabled,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Don't like it")
+            }
         }
     }
 }

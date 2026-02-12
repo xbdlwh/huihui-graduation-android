@@ -14,16 +14,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.huihu_app.ui.AppViewModelProvider
 import com.example.huihu_app.ui.components.FoodLoadingCard
-import com.example.huihu_app.ui.components.FoodReactionBar
-import com.example.huihu_app.ui.components.SwipeFoodCard
+import com.example.huihu_app.ui.components.TodayFoodActionBar
+import com.example.huihu_app.ui.components.TodayFoodCard
 import com.example.huihu_app.ui.viewModel.FoodRecommendationViewModel
 
 @Composable
@@ -46,9 +44,9 @@ fun FoodRecommendationScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Food Recommendation",
+                text = "Today's Food!",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.Bold
             )
 
             if (uiState.pendingReactionCount > 0) {
@@ -86,37 +84,34 @@ fun FoodRecommendationScreen(
                 }
 
                 else -> {
-                    val topCard = uiState.cards.first()
-                    key(topCard.id) {
-                        SwipeFoodCard(
-                            food = topCard,
-                            onSwipeRight = { viewModel.onLike() },
-                            onSwipeLeft = { viewModel.onSkip() },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    FoodReactionBar(
-                        onSkip = { viewModel.onSkip() },
-                        onDislike = { viewModel.onDislike() },
-                        onLike = { viewModel.onLike() },
-                        enabled = !uiState.isLoading,
+                    val currentFood = uiState.cards.first()
+                    TodayFoodCard(
+                        food = currentFood,
+                        isCelebrating = uiState.acceptedFoodId == currentFood.id,
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    Text(
-                        text = "${uiState.cards.size} card(s) left in this batch",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.End,
+                    TodayFoodActionBar(
+                        onThatsIt = { viewModel.onThatsIt() },
+                        onChangeIt = { viewModel.onChangeIt() },
+                        onDontLikeIt = { viewModel.onDontLikeIt() },
+                        enabled = !uiState.isLoading,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
 
+            if (uiState.feedbackMessage != null) {
+                Text(
+                    text = uiState.feedbackMessage!!,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
             if (uiState.error != null && uiState.cards.isNotEmpty()) {
                 Text(
-                    text = "Network issue while updating feed: ${uiState.error}",
+                    text = "Network issue while syncing: ${uiState.error}",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.error
                 )

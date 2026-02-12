@@ -15,7 +15,9 @@ data class FoodRecommendationUiState(
     val cards: List<Food> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
-    val pendingReactionCount: Int = 0
+    val pendingReactionCount: Int = 0,
+    val acceptedFoodId: Int? = null,
+    val feedbackMessage: String? = null
 )
 
 class FoodRecommendationViewModel(
@@ -53,27 +55,63 @@ class FoodRecommendationViewModel(
         fetchRecommendation()
     }
 
-    fun onLike() {
-        consumeTopCard(reaction = "like")
+    fun onThatsIt() {
+        val topCard = _uiState.value.cards.firstOrNull() ?: return
+        sendReactionAsync(
+            FoodReactionRequest(
+                food_id = topCard.id,
+                reaction = "like",
+                source = "food_tab",
+                occurred_at = System.currentTimeMillis() / 1000
+            )
+        )
+        _uiState.update {
+            it.copy(
+                acceptedFoodId = topCard.id,
+                feedbackMessage = "Great choice. Enjoy your meal."
+            )
+        }
     }
 
-    fun onSkip() {
-        consumeTopCard(reaction = "skip")
-    }
-
-    fun onDislike() {
-        consumeTopCard(reaction = "dislike")
-    }
-
-    fun loadMore() {
-        if (_uiState.value.isLoading || _uiState.value.cards.isNotEmpty()) return
+    fun onChangeIt() {
+        val topCard = _uiState.value.cards.firstOrNull() ?: return
+        sendReactionAsync(
+            FoodReactionRequest(
+                food_id = topCard.id,
+                reaction = "skip",
+                source = "food_tab",
+                occurred_at = System.currentTimeMillis() / 1000
+            )
+        )
+        _uiState.update {
+            it.copy(acceptedFoodId = null, feedbackMessage = null)
+        }
         fetchRecommendation()
     }
 
+    fun onDontLikeIt() {
+        val topCard = _uiState.value.cards.firstOrNull() ?: return
+        sendReactionAsync(
+            FoodReactionRequest(
+                food_id = topCard.id,
+                reaction = "dislike",
+                source = "food_tab",
+                occurred_at = System.currentTimeMillis() / 1000
+            )
+        )
+        _uiState.update {
+            it.copy(
+                acceptedFoodId = null,
+                feedbackMessage = "Noted. We will refine your recommendations."
+            )
+        }
+    }
+
     private fun fetchRecommendation() {
+        if (_uiState.value.isLoading) return
         val token = authToken ?: return
         _uiState.update {
-            it.copy(isLoading = true, error = null)
+            it.copy(isLoading = true, error = null, acceptedFoodId = null, feedbackMessage = null)
         }
 
         viewModelScope.launch {
@@ -95,27 +133,6 @@ class FoodRecommendationViewModel(
         }
     }
 
-    private fun consumeTopCard(reaction: String) {
-        val topCard = _uiState.value.cards.firstOrNull() ?: return
-
-        sendReactionAsync(
-            FoodReactionRequest(
-                food_id = topCard.id,
-                reaction = reaction,
-                source = "food_tab",
-                occurred_at = System.currentTimeMillis() / 1000
-            )
-        )
-
-        _uiState.update {
-            it.copy(cards = it.cards.drop(1), error = null)
-        }
-
-        if (_uiState.value.cards.isEmpty()) {
-            loadMore()
-        }
-    }
-
     private fun sendReactionAsync(request: FoodReactionRequest) {
         _uiState.update {
             it.copy(pendingReactionCount = it.pendingReactionCount + 1)
@@ -130,30 +147,19 @@ class FoodRecommendationViewModel(
                 return@launch
             }
 
-//            repeat(MAX_REACTION_RETRY) { attempt ->
-                val response = foodRepository.reaction(
-                    token = token,
-                    foodId = request.food_id,
-                    reaction = request.reaction,
-                    source = request.source,
-                    occurredAt = request.occurred_at
-                )
-                if (response.isSuccess()) {
-                    _uiState.update {
-                        it.copy(pendingReactionCount = (it.pendingReactionCount - 1).coerceAtLeast(0))
-                    }
-                    return@launch
+            val response = foodRepository.reaction(
+                token = token,
+                foodId = request.food_id,
+                reaction = request.reaction,
+                source = request.source,
+                occurredAt = request.occurred_at
+            )
+            if (response.isSuccess()) {
+                _uiState.update {
+                    it.copy(pendingReactionCount = (it.pendingReactionCount - 1).coerceAtLeast(0))
                 }
-//                if (attempt < MAX_REACTION_RETRY - 1) {
-//                    delay(2000)
-//                }
-//            }
-//            _uiState.update {
-//                it.copy(
-//                    pendingReactionCount = (it.pendingReactionCount - 1).coerceAtLeast(0),
-//                    error = "Some feedback was not synced. Please continue."
-//                )
-//            }
+                return@launch
+            }
         }
     }
 }
