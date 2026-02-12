@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.devtools.ksp") version "2.3.5"
     kotlin("plugin.serialization") version "2.3.0"
 
 }
@@ -67,6 +68,9 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:3.0.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
+    implementation("androidx.room:room-runtime:2.8.2")
+    implementation("androidx.room:room-ktx:2.8.2")
+    ksp("androidx.room:room-compiler:2.8.2")
 
     implementation("androidx.navigation3:navigation3-runtime:1.1.0-alpha03")
     implementation("androidx.navigation3:navigation3-ui:1.1.0-alpha03")

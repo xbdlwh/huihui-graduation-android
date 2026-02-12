@@ -5,150 +5,209 @@ import androidx.lifecycle.viewModelScope
 import com.example.huihu_app.data.model.Food
 import com.example.huihu_app.data.model.FoodReactionRequest
 import com.example.huihu_app.data.repository.FoodRepository
+import com.example.huihu_app.data.repository.LocalStoreRepository
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class FoodRecommendationUiState(
-    val cards: List<Food> = emptyList(),
+    val currentFood: Food? = null,
+    val cachedCount: Int = 0,
     val isLoading: Boolean = false,
+    val isRefilling: Boolean = false,
     val error: String? = null,
     val acceptedFoodId: Int? = null,
     val feedbackMessage: String? = null
 )
 
 class FoodRecommendationViewModel(
-    private val foodRepository: FoodRepository
+    private val foodRepository: FoodRepository,
+    private val localStoreRepository: LocalStoreRepository
 ) : ViewModel() {
+
+    companion object {
+        private const val LOW_CACHE_THRESHOLD = 3
+        private const val CACHE_LIMIT = 100
+    }
 
     private val _uiState = MutableStateFlow(FoodRecommendationUiState())
     val uiState = _uiState.asStateFlow()
 
     private var authToken: String? = null
-    private var hasLoaded = false
+    private var refillJob: Job? = null
 
     fun load(token: String, force: Boolean = false) {
         if (authToken == null) {
             authToken = token
         } else if (authToken != token) {
             authToken = token
-            hasLoaded = false
         }
 
         if (_uiState.value.isLoading) return
 
-        val shouldFetch = force || !hasLoaded || _uiState.value.cards.isEmpty()
-        if (!shouldFetch) return
-
-        fetchRecommendation()
+        viewModelScope.launch {
+            refreshCurrentFood(forceRemote = force)
+        }
     }
 
     fun retry() {
         if (_uiState.value.isLoading) return
-        fetchRecommendation()
+        viewModelScope.launch {
+            refreshCurrentFood(forceRemote = true)
+        }
     }
 
     fun onThatsIt() {
-        val topCard = _uiState.value.cards.firstOrNull() ?: return
+        val current = _uiState.value.currentFood ?: return
         sendReactionAsync(
             FoodReactionRequest(
-                food_id = topCard.id,
+                food_id = current.id,
                 reaction = "like",
                 source = "food_tab",
                 occurred_at = System.currentTimeMillis() / 1000
             )
         )
+        viewModelScope.launch {
+            localStoreRepository.saveTodayFoodId(current.id)
+        }
         _uiState.update {
             it.copy(
-                acceptedFoodId = topCard.id,
+                acceptedFoodId = current.id,
                 feedbackMessage = "Great choice. Enjoy your meal."
             )
         }
     }
 
     fun onChangeIt() {
-        val topCard = _uiState.value.cards.firstOrNull() ?: return
+        val current = _uiState.value.currentFood ?: return
         sendReactionAsync(
             FoodReactionRequest(
-                food_id = topCard.id,
+                food_id = current.id,
                 reaction = "skip",
                 source = "food_tab",
                 occurred_at = System.currentTimeMillis() / 1000
             )
         )
-        _uiState.update {
-            it.copy(acceptedFoodId = null, feedbackMessage = null)
+        viewModelScope.launch {
+            removeCurrentAndLoadNext(current.id, null)
         }
-        fetchRecommendation()
     }
 
     fun onDontLikeIt() {
-        val topCard = _uiState.value.cards.firstOrNull() ?: return
+        val current = _uiState.value.currentFood ?: return
         sendReactionAsync(
             FoodReactionRequest(
-                food_id = topCard.id,
+                food_id = current.id,
                 reaction = "dislike",
                 source = "food_tab",
                 occurred_at = System.currentTimeMillis() / 1000
             )
         )
-        _uiState.update {
-            it.copy(
-                acceptedFoodId = null,
-                feedbackMessage = "Noted. We will refine your recommendations."
-            )
+        viewModelScope.launch {
+            removeCurrentAndLoadNext(current.id, "Noted. We will refine your recommendations.")
         }
     }
 
     fun nextFood() {
-        _uiState.update {
-            it.copy(acceptedFoodId = null, feedbackMessage = null)
+        val current = _uiState.value.currentFood ?: return
+        viewModelScope.launch {
+            removeCurrentAndLoadNext(current.id, null)
         }
-        fetchRecommendation()
     }
 
-    private fun fetchRecommendation() {
-        if (_uiState.value.isLoading) return
+    private suspend fun removeCurrentAndLoadNext(foodId: Int, message: String?) {
+        val today = localStoreRepository.getTodayFoodIdOrNull()
+        foodRepository.removeCachedFood(foodId)
+        if (today == foodId) {
+            localStoreRepository.clearTodayFoodId()
+        }
+        _uiState.update {
+            it.copy(acceptedFoodId = null, feedbackMessage = message)
+        }
+        refreshCurrentFood(forceRemote = false)
+    }
+
+    private suspend fun refreshCurrentFood(forceRemote: Boolean) {
         val token = authToken ?: return
         _uiState.update {
-            it.copy(isLoading = true, error = null, acceptedFoodId = null, feedbackMessage = null)
+            it.copy(isLoading = true, error = null)
         }
 
-        viewModelScope.launch {
-            val res = foodRepository.recommendation(token)
-            if (res.isSuccess()) {
-                hasLoaded = true
+        if (forceRemote || foodRepository.getTopCachedFood() == null) {
+            val fetched = fetchAndCache(token)
+            if (!fetched && foodRepository.getTopCachedFood() == null) {
                 _uiState.update {
                     it.copy(
-                        cards = res.data ?: emptyList(),
                         isLoading = false,
-                        error = null
+                        error = "Failed to load recommendations. Please retry."
                     )
                 }
-            } else {
+                return
+            }
+        }
+
+        val topFood = foodRepository.getTopCachedFood()
+        val count = foodRepository.getCachedCount()
+        val todayFoodId = localStoreRepository.getTodayFoodIdOrNull()
+
+        _uiState.update {
+            it.copy(
+                currentFood = topFood,
+                cachedCount = count,
+                isLoading = false,
+                acceptedFoodId = if (todayFoodId == topFood?.id) todayFoodId else null,
+                feedbackMessage = if (todayFoodId == topFood?.id) "Great choice. Enjoy your meal." else it.feedbackMessage
+            )
+        }
+
+        if (count <= LOW_CACHE_THRESHOLD) {
+            triggerBackgroundRefill(token)
+        }
+    }
+
+    private fun triggerBackgroundRefill(token: String) {
+        if (refillJob?.isActive == true) return
+
+        refillJob = viewModelScope.launch {
+            _uiState.update {
+                it.copy(isRefilling = true)
+            }
+            val fetched = fetchAndCache(token)
+            if (fetched) {
+                val count = foodRepository.getCachedCount()
                 _uiState.update {
-                    it.copy(isLoading = false, error = res.message)
+                    it.copy(cachedCount = count)
                 }
+            }
+            _uiState.update {
+                it.copy(isRefilling = false)
             }
         }
     }
 
-    private fun sendReactionAsync(request: FoodReactionRequest) {
+    private suspend fun fetchAndCache(token: String): Boolean {
+        val res = foodRepository.recommendation(token)
+        if (!res.isSuccess()) {
+            return false
+        }
+        val foods = res.data ?: emptyList()
+        foodRepository.saveRecommendationsToCache(foods)
+        foodRepository.trimCache(CACHE_LIMIT)
+        return true
+    }
 
+    private fun sendReactionAsync(request: FoodReactionRequest) {
         viewModelScope.launch {
             val token = authToken ?: return@launch
-
-            val response = foodRepository.reaction(
+            foodRepository.reaction(
                 token = token,
                 foodId = request.food_id,
                 reaction = request.reaction,
                 source = request.source,
                 occurredAt = request.occurred_at
             )
-            if (response.isSuccess()) {
-                return@launch
-            }
         }
     }
 }

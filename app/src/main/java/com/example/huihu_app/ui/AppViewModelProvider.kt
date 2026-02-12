@@ -20,7 +20,10 @@ class AppViewModelProvider {
                 )
             }
             initializer {
-                HomeViewModel(container().localStoreRepository)
+                HomeViewModel(
+                    container().localStoreRepository,
+                    container().foodRepository
+                )
             }
             initializer {
                 AuthViewModel(
@@ -36,7 +39,8 @@ class AppViewModelProvider {
             }
             initializer {
                 FoodRecommendationViewModel(
-                    container().foodRepository
+                    container().foodRepository,
+                    container().localStoreRepository
                 )
             }
         }

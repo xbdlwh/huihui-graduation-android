@@ -3,6 +3,7 @@ package com.example.huihu_app.data.repository
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.huihu_app.state.AuthState
@@ -21,6 +22,7 @@ class LocalStoreRepository(context: Context) {
         val AUTH_TOKEN = stringPreferencesKey("auth_token")
         val IS_NEW_USER = booleanPreferencesKey("is_new_user")
         val OPEN_FOOD_TAB_ONCE = booleanPreferencesKey("open_food_tab_once")
+        val TODAY_FOOD_ID = intPreferencesKey("today_food_id")
     }
 
     val authState = dataStore.data.map {
@@ -46,6 +48,7 @@ class LocalStoreRepository(context: Context) {
             it.remove(AUTH_TOKEN)
             it.remove(IS_NEW_USER)
             it.remove(OPEN_FOOD_TAB_ONCE)
+            it.remove(TODAY_FOOD_ID)
         }
     }
 
@@ -64,5 +67,19 @@ class LocalStoreRepository(context: Context) {
             }
         }
         return shouldOpen
+    }
+
+    suspend fun saveTodayFoodId(foodId: Int) {
+        dataStore.edit {
+            it[TODAY_FOOD_ID] = foodId
+        }
+    }
+
+    suspend fun getTodayFoodIdOrNull(): Int? = dataStore.data.first()[TODAY_FOOD_ID]
+
+    suspend fun clearTodayFoodId() {
+        dataStore.edit {
+            it.remove(TODAY_FOOD_ID)
+        }
     }
 }

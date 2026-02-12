@@ -40,12 +40,20 @@ fun FoodRecommendationScreen(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        if (uiState.isRefilling) {
+            Text(
+                text = "Refreshing recommendations...",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
         when {
-            uiState.isLoading && uiState.cards.isEmpty() -> {
+            uiState.isLoading && uiState.currentFood == null -> {
                 FoodLoadingCard(modifier = Modifier.fillMaxWidth())
             }
 
-            uiState.error != null && uiState.cards.isEmpty() -> {
+            uiState.error != null && uiState.currentFood == null -> {
                 Text(
                     text = uiState.error!!,
                     color = MaterialTheme.colorScheme.error,
@@ -56,7 +64,7 @@ fun FoodRecommendationScreen(
                 }
             }
 
-            uiState.cards.isEmpty() -> {
+            uiState.currentFood == null -> {
                 Text(
                     text = "No recommendations right now.",
                     style = MaterialTheme.typography.bodyMedium
@@ -67,7 +75,7 @@ fun FoodRecommendationScreen(
             }
 
             else -> {
-                val currentFood = uiState.cards.first()
+                val currentFood = uiState.currentFood!!
                 val isAccepted = uiState.acceptedFoodId == currentFood.id
                 TodayFoodCard(
                     food = currentFood,
@@ -101,16 +109,22 @@ fun FoodRecommendationScreen(
             )
         }
 
-        if (uiState.error != null && uiState.cards.isNotEmpty()) {
+        Text(
+            text = "Cached foods: ${uiState.cachedCount}",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        if (uiState.error != null && uiState.currentFood != null) {
             Text(
                 text = "Network issue while syncing: ${uiState.error}",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.error
             )
         }
-
-        if (uiState.isLoading && uiState.cards.isNotEmpty()) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-        }
+//
+//        if (uiState.isLoading && uiState.currentFood != null) {
+//            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+//        }
     }
 }

@@ -4,10 +4,14 @@ import com.example.huihu_app.data.model.ApiResponse
 import com.example.huihu_app.data.model.ConsecutiveSuggestRequest
 import com.example.huihu_app.data.model.Food
 import com.example.huihu_app.data.model.FoodReactionRequest
+import com.example.huihu_app.data.local.dao.FoodCacheDao
+import com.example.huihu_app.data.local.entity.toEntity
+import com.example.huihu_app.data.local.entity.toFood
 import com.example.huihu_app.data.source.FoodSource
 
 class FoodRepository(
     private val foodSource: FoodSource,
+    private val foodCacheDao: FoodCacheDao,
 ) {
     suspend fun consecutiveSuggest(
         token: String,
@@ -53,4 +57,25 @@ class FoodRepository(
         }.getOrElse {
             return ApiResponse.from(it)
         }
+
+    suspend fun saveRecommendationsToCache(foods: List<Food>) {
+        if (foods.isEmpty()) return
+        foodCacheDao.upsertAll(foods.map { it.toEntity() })
+    }
+
+    suspend fun getTopCachedFood(): Food? = foodCacheDao.getTopOne()?.toFood()
+
+    suspend fun getCachedCount(): Int = foodCacheDao.count()
+
+    suspend fun removeCachedFood(foodId: Int) {
+        foodCacheDao.deleteById(foodId)
+    }
+
+    suspend fun trimCache(limit: Int = 100) {
+        foodCacheDao.trimToLimit(limit)
+    }
+
+    suspend fun clearCache() {
+        foodCacheDao.clearAll()
+    }
 }
