@@ -11,6 +11,7 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface TopicSource {
@@ -18,6 +19,12 @@ interface TopicSource {
     suspend fun topics(
         @Header("Authorization") token: String,
         @Query("page") page: Int
+    ): ApiResponse<List<Topic>>
+
+    @GET("/topic/comment/{topic_id}")
+    suspend fun comments(
+        @Header("Authorization") token: String,
+        @Path("topic_id") topicId: Int
     ): ApiResponse<List<Topic>>
 
     @Multipart

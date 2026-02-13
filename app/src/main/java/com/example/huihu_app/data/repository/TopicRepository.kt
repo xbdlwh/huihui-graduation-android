@@ -77,4 +77,16 @@ class TopicRepository(
     }.getOrElse {
         return ApiResponse.from(it)
     }
+
+    suspend fun comments(
+        token: String,
+        topicId: Int
+    ): ApiResponse<List<Topic>> = runCatching {
+        topicSource.comments(
+            token = "Bearer $token",
+            topicId = topicId
+        )
+    }.getOrElse {
+        return ApiResponse.from(it)
+    }
 }

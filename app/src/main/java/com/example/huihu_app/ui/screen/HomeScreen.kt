@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.huihu_app.data.model.Topic
 import com.example.huihu_app.ui.AppViewModelProvider
 import com.example.huihu_app.ui.screen.home.FoodRecommendationScreen
 import com.example.huihu_app.ui.screen.home.ForumScreen
@@ -35,6 +36,7 @@ fun HomeScreen(
     token: String,
     onCreateTopic: () -> Unit,
     onWriteComment: (Int) -> Unit,
+    onOpenTopicDetail: (Topic) -> Unit,
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -78,7 +80,8 @@ fun HomeScreen(
                 0 -> ForumScreen(
                     state = state,
                     token = token,
-                    onWriteComment = onWriteComment
+                    onWriteComment = onWriteComment,
+                    onOpenTopicDetail = onOpenTopicDetail
                 )
                 1 -> FoodRecommendationScreen(token = token)
                 else -> MineScreen(onLogout = viewModel::logout)

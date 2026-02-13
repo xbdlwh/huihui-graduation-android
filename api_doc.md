@@ -134,6 +134,58 @@ Response (error)
 
 ---
 
+### GET /topic/comment/{topic_id}
+List all comments that reply to a topic.
+
+Request
+- Method: `GET`
+- Path: `/topic/comment/{topic_id}`
+- Headers:
+- `Authorization: Bearer <jwt>`
+- Path param:
+- `topic_id`: number
+
+Response (success)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 200,
+  "message": "ok",
+  "data": [
+    {
+      "id": 101,
+      "user_id": 7,
+      "title": "Re: My topic",
+      "content": "I agree",
+      "images": null,
+      "create_at": "2026-02-13T09:31:00+00:00",
+      "user_info": {
+        "id": 7,
+        "name": "bob",
+        "email": "bob@example.com",
+        "profile": null
+      },
+      "comment_count": 0,
+      "like_count": 3,
+      "liked": false
+    }
+  ]
+}
+```
+
+Response (error)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 500,
+  "message": "SqlError(...) or JwtError(...)"
+}
+```
+
+---
+
 ### POST /auth/register
 Request
 - Method: `POST`

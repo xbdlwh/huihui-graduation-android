@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -61,6 +62,7 @@ fun ForumScreen(
     state: LazyListState,
     token: String,
     onWriteComment: (Int) -> Unit,
+    onOpenTopicDetail: (Topic) -> Unit,
     viewModel: ForumViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
 ) {
     val topics = viewModel.topics(token).collectAsLazyPagingItems()
@@ -115,7 +117,8 @@ fun ForumScreen(
                         likeUi = likeUi,
                         likeActionInFlight = topic.id in uiState.inFlightTopicIds,
                         onToggleLike = { viewModel.onToggleLike(token, topic) },
-                        onWriteComment = { onWriteComment(topic.id) }
+                        onWriteComment = { onWriteComment(topic.id) },
+                        onOpenTopicDetail = { onOpenTopicDetail(topic) }
                     )
                 }
             }
@@ -162,13 +165,16 @@ private fun TopicItem(
     likeUi: TopicLikeUi?,
     likeActionInFlight: Boolean,
     onToggleLike: () -> Unit,
-    onWriteComment: () -> Unit
+    onWriteComment: () -> Unit,
+    onOpenTopicDetail: () -> Unit
 ) {
     val liked = likeUi?.liked ?: topic.liked
     val likeCount = likeUi?.likeCount ?: topic.like_count
 
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onOpenTopicDetail)
     ) {
         Row(
             modifier = Modifier
