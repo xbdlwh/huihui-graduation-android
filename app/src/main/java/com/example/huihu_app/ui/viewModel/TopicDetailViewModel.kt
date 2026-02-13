@@ -31,6 +31,7 @@ class TopicDetailViewModel(
         _uiState.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             val response = topicRepository.comments(token, topicId)
+
             if (!response.isSuccess()) {
                 _uiState.update {
                     it.copy(

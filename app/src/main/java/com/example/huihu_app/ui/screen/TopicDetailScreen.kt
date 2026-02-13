@@ -63,7 +63,10 @@ fun TopicDetailScreen(
     onBack: () -> Unit,
     onWriteComment: (Int) -> Unit,
     onOpenTopicDetail: (Topic) -> Unit,
-    viewModel: TopicDetailViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
+    viewModel: TopicDetailViewModel = viewModel(
+        key = "topic_detail_${topic.id}",
+        factory = AppViewModelProvider.FACTORY
+    )
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
