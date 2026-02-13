@@ -17,7 +17,7 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 class AppContainer(context: Context) {
 
-    private val retrofit = Retrofit.Builder().baseUrl("http://192.168.1.216:8899")
+    private val retrofit = Retrofit.Builder().baseUrl(BASE_URL)
         .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .build()
 
@@ -59,5 +59,9 @@ class AppContainer(context: Context) {
 
     val topicRepository by lazy {
         TopicRepository(topicSource)
+    }
+
+    companion object {
+        const val BASE_URL = "http://192.168.1.216:8899/"
     }
 }

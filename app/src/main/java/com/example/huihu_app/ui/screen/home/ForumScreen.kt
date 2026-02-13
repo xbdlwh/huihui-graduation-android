@@ -2,12 +2,16 @@ package com.example.huihu_app.ui.screen.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -18,12 +22,16 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import coil3.compose.AsyncImage
+import com.example.huihu_app.AppContainer
 import com.example.huihu_app.data.model.Topic
 import com.example.huihu_app.ui.AppViewModelProvider
 import com.example.huihu_app.ui.viewModel.ForumViewModel
@@ -137,6 +145,26 @@ private fun TopicItem(topic: Topic) {
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            val images = topic.images.orEmpty()
+            if (images.isNotEmpty()) {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                ) {
+                    items(images) { rawUrl ->
+                        AsyncImage(
+                            model = rawUrl.toAbsoluteImageUrl(),
+                            contentDescription = topic.title,
+                            modifier = Modifier
+                                .aspectRatio(1.2f)
+                                .clip(RoundedCornerShape(10.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
+            }
             Text(
                 text = topic.create_at,
                 style = MaterialTheme.typography.labelSmall,
@@ -149,4 +177,11 @@ private fun TopicItem(topic: Topic) {
             )
         }
     }
+}
+
+private fun String.toAbsoluteImageUrl(): String {
+    if (startsWith("http://") || startsWith("https://")) return this
+    val host = AppContainer.BASE_URL.trimEnd('/')
+    val path = if (startsWith("/")) this else "/$this"
+    return host + path
 }
