@@ -174,125 +174,192 @@ private fun TopicItem(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.Top
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                val profileUrl = topic.user_info?.profile
-                if (!profileUrl.isNullOrBlank()) {
-                    AsyncImage(
-                        model = profileUrl.toAbsoluteImageUrl(),
-                        contentDescription = topic.user_info?.name ?: "profile",
-                        modifier = Modifier
-                            .size(34.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .size(34.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.onSurfaceVariant)
-                            .alpha(0.2f)
-                    )
-                }
-            }
-
-            Column(
+            TopicAuthorAvatar(topic = topic)
+            TopicItemContent(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = topic.user_info?.name ?: "User ${topic.user_id}",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = topic.title,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = topic.content,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                val images = topic.images.orEmpty()
-                if (images.isNotEmpty()) {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(120.dp)
-                    ) {
-                        items(images) { rawUrl ->
-                            AsyncImage(
-                                model = rawUrl.toAbsoluteImageUrl(),
-                                contentDescription = topic.title,
-                                modifier = Modifier
-                                    .aspectRatio(1.2f)
-                                    .clip(RoundedCornerShape(10.dp)),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-                    }
-                }
-
-                Text(
-                    text = topic.create_at,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedButton(
-                        onClick = onToggleLike,
-                        enabled = !likeActionInFlight,
-                        modifier = Modifier
-                            .height(34.dp),
-                        contentPadding = ButtonDefaults.ButtonWithIconContentPadding
-                    ) {
-                        Icon(
-                            imageVector = if (liked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                            contentDescription = null,
-                            modifier = Modifier.height(14.dp)
-                        )
-                        Text(
-                            text = "$likeCount",
-                            modifier = Modifier.padding(start = 4.dp),
-                            style = MaterialTheme.typography.labelSmall,
-                            fontSize = 11.sp
-                        )
-                    }
-
-                    OutlinedButton(
-                        onClick = {},
-                        modifier = Modifier
-                            .height(34.dp),
-                        contentPadding = ButtonDefaults.ButtonWithIconContentPadding
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.ChatBubbleOutline,
-                            contentDescription = null,
-                            modifier = Modifier.height(14.dp)
-                        )
-                        Text(
-                            text = "${topic.comment_count}",
-                            modifier = Modifier.padding(start = 4.dp),
-                            style = MaterialTheme.typography.labelSmall,
-                            fontSize = 11.sp
-                        )
-                    }
-                }
-            }
+                topic = topic,
+                liked = liked,
+                likeCount = likeCount,
+                likeActionInFlight = likeActionInFlight,
+                onToggleLike = onToggleLike
+            )
         }
+    }
+}
+
+@Composable
+private fun TopicAuthorAvatar(topic: Topic) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        val profileUrl = topic.user_info?.profile
+        if (!profileUrl.isNullOrBlank()) {
+            AsyncImage(
+                model = profileUrl.toAbsoluteImageUrl(),
+                contentDescription = topic.user_info?.name ?: "profile",
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.onSurfaceVariant)
+                    .alpha(0.2f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun TopicItemContent(
+    modifier: Modifier = Modifier,
+    topic: Topic,
+    liked: Boolean,
+    likeCount: Int,
+    likeActionInFlight: Boolean,
+    onToggleLike: () -> Unit
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = topic.user_info?.name ?: "User ${topic.user_id}",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Medium
+        )
+        Text(
+            text = topic.title,
+            style = MaterialTheme.typography.titleMedium
+        )
+        TopicTextContent(content = topic.content)
+        TopicImagesStrip(images = topic.images.orEmpty(), title = topic.title)
+        TopicFooter(
+            createdAt = topic.create_at,
+            liked = liked,
+            likeCount = likeCount,
+            commentCount = topic.comment_count,
+            likeActionInFlight = likeActionInFlight,
+            onToggleLike = onToggleLike
+        )
+    }
+}
+
+@Composable
+private fun TopicTextContent(content: String) {
+    Text(
+        text = content,
+        style = MaterialTheme.typography.bodyMedium,
+        maxLines = 3,
+        overflow = TextOverflow.Ellipsis,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+}
+
+@Composable
+private fun TopicImagesStrip(images: List<String>, title: String) {
+    if (images.isEmpty()) return
+
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+    ) {
+        items(images) { rawUrl ->
+            AsyncImage(
+                model = rawUrl.toAbsoluteImageUrl(),
+                contentDescription = title,
+                modifier = Modifier
+                    .aspectRatio(1.2f)
+                    .clip(RoundedCornerShape(10.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
+    }
+}
+
+@Composable
+private fun TopicFooter(
+    createdAt: String,
+    liked: Boolean,
+    likeCount: Int,
+    commentCount: Int,
+    likeActionInFlight: Boolean,
+    onToggleLike: () -> Unit
+) {
+    Text(
+        text = createdAt,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TopicLikeButton(
+            liked = liked,
+            likeCount = likeCount,
+            enabled = !likeActionInFlight,
+            onClick = onToggleLike
+        )
+        TopicCommentCountButton(commentCount = commentCount)
+    }
+}
+
+@Composable
+private fun TopicLikeButton(
+    liked: Boolean,
+    likeCount: Int,
+    enabled: Boolean,
+    onClick: () -> Unit
+) {
+    OutlinedButton(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier.height(34.dp),
+        contentPadding = ButtonDefaults.ButtonWithIconContentPadding
+    ) {
+        Icon(
+            imageVector = if (liked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+            contentDescription = null,
+            modifier = Modifier.height(14.dp)
+        )
+        Text(
+            text = "$likeCount",
+            modifier = Modifier.padding(start = 4.dp),
+            style = MaterialTheme.typography.labelSmall,
+            fontSize = 11.sp
+        )
+    }
+}
+
+@Composable
+private fun TopicCommentCountButton(commentCount: Int) {
+    OutlinedButton(
+        onClick = {},
+        modifier = Modifier.height(34.dp),
+        contentPadding = ButtonDefaults.ButtonWithIconContentPadding
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.ChatBubbleOutline,
+            contentDescription = null,
+            modifier = Modifier.height(14.dp)
+        )
+        Text(
+            text = "$commentCount",
+            modifier = Modifier.padding(start = 4.dp),
+            style = MaterialTheme.typography.labelSmall,
+            fontSize = 11.sp
+        )
     }
 }
 
