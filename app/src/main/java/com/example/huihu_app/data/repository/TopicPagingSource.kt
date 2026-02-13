@@ -6,13 +6,17 @@ import com.example.huihu_app.data.model.Topic
 import com.example.huihu_app.data.source.TopicSource
 
 class TopicPagingSource(
-    private val topicSource: TopicSource
+    private val topicSource: TopicSource,
+    private val token: String
 ) : PagingSource<Int, Topic>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Topic> {
         val page = params.key ?: 1
         return try {
-            val response = topicSource.topics(page)
+            val response = topicSource.topics(
+                token = "Bearer $token",
+                page = page
+            )
             if (!response.isSuccess()) {
                 return LoadResult.Error(IllegalStateException(response.message))
             }

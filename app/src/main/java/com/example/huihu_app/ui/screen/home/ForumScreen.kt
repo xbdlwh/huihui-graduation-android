@@ -1,7 +1,9 @@
 package com.example.huihu_app.ui.screen.home
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,21 +14,29 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -35,12 +45,25 @@ import com.example.huihu_app.AppContainer
 import com.example.huihu_app.data.model.Topic
 import com.example.huihu_app.ui.AppViewModelProvider
 import com.example.huihu_app.ui.viewModel.ForumViewModel
+import com.example.huihu_app.ui.viewModel.TopicLikeUi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ForumScreen(state: LazyListState, viewModel: ForumViewModel = viewModel(factory = AppViewModelProvider.FACTORY)) {
-    val topics = viewModel.topics.collectAsLazyPagingItems()
+fun ForumScreen(
+    state: LazyListState,
+    token: String,
+    viewModel: ForumViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
+) {
+    val topics = viewModel.topics(token).collectAsLazyPagingItems()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     val isRefreshing = topics.loadState.refresh is LoadState.Loading
+    val context = LocalContext.current
+
+    LaunchedEffect(uiState.message) {
+        val message = uiState.message ?: return@LaunchedEffect
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        viewModel.consumeMessage()
+    }
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
@@ -77,7 +100,13 @@ fun ForumScreen(state: LazyListState, viewModel: ForumViewModel = viewModel(fact
             items(topics.itemCount) { index ->
                 val topic = topics[index]
                 if (topic != null) {
-                    TopicItem(topic)
+                    val likeUi = uiState.likeOverrides[topic.id]
+                    TopicItem(
+                        topic = topic,
+                        likeUi = likeUi,
+                        likeActionInFlight = topic.id in uiState.inFlightTopicIds,
+                        onToggleLike = { viewModel.onToggleLike(token, topic) }
+                    )
                 }
             }
 
@@ -118,7 +147,15 @@ fun ForumScreen(state: LazyListState, viewModel: ForumViewModel = viewModel(fact
 }
 
 @Composable
-private fun TopicItem(topic: Topic) {
+private fun TopicItem(
+    topic: Topic,
+    likeUi: TopicLikeUi?,
+    likeActionInFlight: Boolean,
+    onToggleLike: () -> Unit
+) {
+    val liked = likeUi?.liked ?: topic.liked
+    val likeCount = likeUi?.likeCount ?: topic.like_count
+
     Card(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -126,7 +163,7 @@ private fun TopicItem(topic: Topic) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
                 text = topic.user_info?.name ?: "User ${topic.user_id}",
@@ -165,13 +202,34 @@ private fun TopicItem(topic: Topic) {
                     }
                 }
             }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = topic.create_at,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                OutlinedButton(
+                    onClick = onToggleLike,
+                    enabled = !likeActionInFlight
+                ) {
+                    Icon(
+                        imageVector = if (liked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = null
+                    )
+                    Text(
+                        text = if (liked) "Liked" else "Like",
+                        modifier = Modifier.padding(start = 6.dp)
+                    )
+                }
+            }
+
             Text(
-                text = topic.create_at,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = "${topic.like_count} likes · ${topic.comment_count} comments",
+                text = "$likeCount likes · ${topic.comment_count} comments",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

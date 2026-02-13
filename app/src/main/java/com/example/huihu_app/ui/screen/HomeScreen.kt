@@ -74,7 +74,7 @@ fun HomeScreen(
             contentAlignment = Alignment.Center
         ) {
             when (uiState.selectedTab) {
-                0 -> ForumScreen(state)
+                0 -> ForumScreen(state = state, token = token)
                 1 -> FoodRecommendationScreen(token = token)
                 else -> MineScreen(onLogout = viewModel::logout)
             }

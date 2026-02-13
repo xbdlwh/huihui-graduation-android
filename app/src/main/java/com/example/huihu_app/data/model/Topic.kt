@@ -12,7 +12,8 @@ data class Topic(
     val create_at: String,
     val user_info: TopicUserInfo? = null,
     val comment_count: Int = 0,
-    val like_count: Int = 0
+    val like_count: Int = 0,
+    val liked: Boolean = false
 )
 
 @Serializable

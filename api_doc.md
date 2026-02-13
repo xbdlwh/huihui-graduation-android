@@ -91,6 +91,49 @@ Response (error)
 
 ---
 
+### POST /topic/like
+Like or unlike a topic with one API.
+
+Request
+- Method: `POST`
+- Path: `/topic/like`
+- Headers:
+- `Authorization: Bearer <jwt>`
+- Body:
+```json
+{
+  "topic_id": 12,
+  "like": true
+}
+```
+
+Behavior
+- `like = true`: like topic (idempotent).
+- `like = false`: unlike topic.
+
+Response (success)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 200,
+  "message": "ok",
+  "data": null
+}
+```
+
+Response (error)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 500,
+  "message": "SqlError(...) or JwtError(...)"
+}
+```
+
+---
+
 ### POST /auth/register
 Request
 - Method: `POST`
@@ -304,6 +347,8 @@ Fetch topics by page.
 Request
 - Method: `GET`
 - Path: `/topic`
+- Headers:
+- `Authorization: Bearer <jwt>`
 - Query:
 - `page`: number, optional, default `1`
 - Body: none
@@ -330,7 +375,8 @@ Response (success)
         "email": "alice@example.com"
       },
       "comment_count": 12,
-      "like_count": 34
+      "like_count": 34,
+      "liked": true
     }
   ]
 }

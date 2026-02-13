@@ -3,6 +3,7 @@ package com.example.huihu_app.data.source
 import com.example.huihu_app.data.model.ApiResponse
 import com.example.huihu_app.data.model.CreateTopicRequest
 import com.example.huihu_app.data.model.Topic
+import com.example.huihu_app.data.model.TopicLikeRequest
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -14,7 +15,10 @@ import retrofit2.http.Query
 
 interface TopicSource {
     @GET("/topic")
-    suspend fun topics(@Query("page") page: Int): ApiResponse<List<Topic>>
+    suspend fun topics(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int
+    ): ApiResponse<List<Topic>>
 
     @Multipart
     @POST("/upload")
@@ -25,4 +29,10 @@ interface TopicSource {
         @Header("Authorization") token: String,
         @Body request: CreateTopicRequest
     ): ApiResponse<Unit>
+
+    @POST("/topic/like")
+    suspend fun likeTopic(
+        @Header("Authorization") token: String,
+        @Body request: TopicLikeRequest
+    ): ApiResponse<Unit?>
 }
