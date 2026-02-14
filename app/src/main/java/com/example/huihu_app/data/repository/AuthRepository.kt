@@ -1,6 +1,7 @@
 package com.example.huihu_app.data.repository
 
 import com.example.huihu_app.data.model.ApiResponse
+import com.example.huihu_app.data.model.AuthUpdateRequest
 import com.example.huihu_app.data.model.AuthToken
 import com.example.huihu_app.data.model.CurrentUser
 import com.example.huihu_app.data.model.RegisterRequest
@@ -30,4 +31,22 @@ class AuthRepository(
         }.getOrElse {
             return ApiResponse.from(it)
         }
+
+    suspend fun update(
+        token: String,
+        email: String? = null,
+        username: String? = null,
+        profile: String? = null
+    ): ApiResponse<CurrentUser> = runCatching {
+        authSource.update(
+            token = "Bearer $token",
+            request = AuthUpdateRequest(
+                email = email,
+                username = username,
+                profile = profile
+            )
+        )
+    }.getOrElse {
+        return ApiResponse.from(it)
+    }
 }

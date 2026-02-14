@@ -37,6 +37,7 @@ fun HomeScreen(
     onCreateTopic: () -> Unit,
     onWriteComment: (Int) -> Unit,
     onOpenTopicDetail: (Topic) -> Unit,
+    onEditProfile: () -> Unit,
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -84,7 +85,11 @@ fun HomeScreen(
                     onOpenTopicDetail = onOpenTopicDetail
                 )
                 1 -> FoodRecommendationScreen(token = token)
-                else -> MineScreen(onLogout = viewModel::logout)
+                else -> MineScreen(
+                    token = token,
+                    onEditProfile = onEditProfile,
+                    onLogout = viewModel::logout
+                )
             }
         }
     }

@@ -224,6 +224,55 @@ Response (error)
 
 ---
 
+### POST /auth/update
+Update current user information.
+
+Request
+- Method: `POST`
+- Path: `/auth/update`
+- Headers:
+- `Authorization: Bearer <jwt>`
+- Body:
+```json
+{
+  "email": "new_email@example.com",
+  "username": "new_username",
+  "profile": "https://cdn.example.com/avatar.jpg"
+}
+```
+
+Notes
+- All fields are optional.
+- Provided fields are updated; omitted fields keep current values.
+
+Response (success)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 200,
+  "message": "ok",
+  "data": {
+    "id": 1,
+    "email": "new_email@example.com",
+    "name": "new_username",
+    "profile": "https://cdn.example.com/avatar.jpg"
+  }
+}
+```
+
+Response (error)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 500,
+  "message": "SqlError(...) or JwtError(...)"
+}
+```
+
+---
+
 ### GET /auth/me
 Request
 - Method: `GET`

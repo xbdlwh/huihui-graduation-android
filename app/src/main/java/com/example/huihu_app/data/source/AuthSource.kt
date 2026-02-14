@@ -1,6 +1,7 @@
 package com.example.huihu_app.data.source
 
 import com.example.huihu_app.data.model.ApiResponse
+import com.example.huihu_app.data.model.AuthUpdateRequest
 import com.example.huihu_app.data.model.AuthToken
 import com.example.huihu_app.data.model.CurrentUser
 import com.example.huihu_app.data.model.RegisterRequest
@@ -20,4 +21,10 @@ interface AuthSource {
 
     @GET("/auth/me")
     suspend fun me(@Header("Authorization") token: String): ApiResponse<CurrentUser>
+
+    @POST("/auth/update")
+    suspend fun update(
+        @Header("Authorization") token: String,
+        @Body request: AuthUpdateRequest
+    ): ApiResponse<CurrentUser>
 }

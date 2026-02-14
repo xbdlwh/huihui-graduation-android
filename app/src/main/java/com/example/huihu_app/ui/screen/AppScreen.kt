@@ -71,7 +71,20 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                         token = authToken!!,
                         onCreateTopic = { backStack.add(Nav.CreateTopic) },
                         onWriteComment = { topicId -> backStack.add(Nav.WriteComment(topicId)) },
-                        onOpenTopicDetail = { topic -> backStack.add(Nav.TopicDetail(topic)) }
+                        onOpenTopicDetail = { topic -> backStack.add(Nav.TopicDetail(topic)) },
+                        onEditProfile = { backStack.add(Nav.EditProfile) }
+                    )
+                }
+                entry<Nav.EditProfile>() {
+                    EditProfileScreen(
+                        token = authToken!!,
+                        onBack = {
+                            if (backStack.size > 1) {
+                                backStack.removeLast()
+                            } else {
+                                backStack.add(Nav.Home)
+                            }
+                        }
                     )
                 }
                 entry<Nav.TopicDetail> { nav ->
