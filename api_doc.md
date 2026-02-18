@@ -384,6 +384,80 @@ Response (error)
 
 ---
 
+### GET /restaurant/simple
+List all restaurants with minimal fields.
+
+Request
+- Method: `GET`
+- Path: `/restaurant/simple`
+- Body: none
+
+Response (success)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 200,
+  "message": "ok",
+  "data": [
+    {
+      "id": 1,
+      "name": "Sunset Noodle House"
+    }
+  ]
+}
+```
+
+Response (error)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 500,
+  "message": "SqlError(...)"
+}
+```
+
+---
+
+### GET /restaurant/foods
+List all foods offered by one restaurant.
+
+Request
+- Method: `GET`
+- Path: `/restaurant/foods`
+- Query:
+- `restaurant_id`: number, required
+
+Response (success)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 200,
+  "message": "ok",
+  "data": [
+    {
+      "id": 10,
+      "name": "Spicy Chicken",
+      "image": "https://cdn.example.com/foods/spicy-chicken.jpg"
+    }
+  ]
+}
+```
+
+Response (error)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 500,
+  "message": "SqlError(...)"
+}
+```
+
+---
+
 ### POST /suggestion
 Create a new suggestion.
 

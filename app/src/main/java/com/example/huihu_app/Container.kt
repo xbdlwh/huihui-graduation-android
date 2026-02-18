@@ -6,10 +6,12 @@ import com.example.huihu_app.data.local.AppDatabase
 import com.example.huihu_app.data.repository.AuthRepository
 import com.example.huihu_app.data.repository.FoodRepository
 import com.example.huihu_app.data.repository.LocalStoreRepository
+import com.example.huihu_app.data.repository.RestaurantRepository
 import com.example.huihu_app.data.repository.SuggestionRepository
 import com.example.huihu_app.data.repository.TopicRepository
 import com.example.huihu_app.data.source.AuthSource
 import com.example.huihu_app.data.source.FoodSource
+import com.example.huihu_app.data.source.RestaurantSource
 import com.example.huihu_app.data.source.SuggestionSource
 import com.example.huihu_app.data.source.TopicSource
 import kotlinx.serialization.json.Json
@@ -47,6 +49,10 @@ class AppContainer(context: Context) {
         retrofit.create(SuggestionSource::class.java)
     }
 
+    val restaurantSource by lazy {
+        retrofit.create(RestaurantSource::class.java)
+    }
+
     val foodCacheDao by lazy {
         appDatabase.foodCacheDao()
     }
@@ -69,6 +75,10 @@ class AppContainer(context: Context) {
 
     val suggestionRepository by lazy {
         SuggestionRepository(suggestionSource)
+    }
+
+    val restaurantRepository by lazy {
+        RestaurantRepository(restaurantSource)
     }
 
     companion object {

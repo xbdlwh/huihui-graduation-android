@@ -86,6 +86,19 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                             } else {
                                 backStack.add(Nav.Home)
                             }
+                        },
+                        onAddSuggestion = { backStack.add(Nav.AddSuggestion) }
+                    )
+                }
+                entry<Nav.AddSuggestion>() {
+                    AddSuggestionScreen(
+                        token = authToken!!,
+                        onBack = {
+                            if (backStack.size > 1) {
+                                backStack.removeLast()
+                            } else {
+                                backStack.add(Nav.Suggestion)
+                            }
                         }
                     )
                 }

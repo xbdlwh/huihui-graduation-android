@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.huihu_app.MainApp
 import com.example.huihu_app.ui.viewModel.AppViewModel
+import com.example.huihu_app.ui.viewModel.AddSuggestionViewModel
 import com.example.huihu_app.ui.viewModel.AuthViewModel
 import com.example.huihu_app.ui.viewModel.CreateTopicViewModel
 import com.example.huihu_app.ui.viewModel.EditProfileViewModel
@@ -78,6 +79,13 @@ class AppViewModelProvider {
             initializer {
                 SuggestionViewModel(
                     container().suggestionRepository
+                )
+            }
+            initializer {
+                AddSuggestionViewModel(
+                    container().suggestionRepository,
+                    container().restaurantRepository,
+                    container().topicRepository
                 )
             }
         }
