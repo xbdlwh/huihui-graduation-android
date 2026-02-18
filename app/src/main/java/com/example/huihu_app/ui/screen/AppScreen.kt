@@ -78,7 +78,16 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                     )
                 }
                 entry<Nav.Suggestion>() {
-                    SuggestionScreen(token = authToken!!)
+                    SuggestionScreen(
+                        token = authToken!!,
+                        onBack = {
+                            if (backStack.size > 1) {
+                                backStack.removeLast()
+                            } else {
+                                backStack.add(Nav.Home)
+                            }
+                        }
+                    )
                 }
                 entry<Nav.FoodTrack>() {
                     FoodTrackScreen(token = authToken!!)
