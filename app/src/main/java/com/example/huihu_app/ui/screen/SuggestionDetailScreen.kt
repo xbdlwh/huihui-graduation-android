@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -15,6 +14,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -60,72 +62,104 @@ fun SuggestionDetailScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                MetaChip(label = "Type: ${suggestion.type}")
-                MetaChip(label = "Status: ${suggestion.status}")
-            }
+            Card(
+                shape = RoundedCornerShape(14.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        MetaChip(label = "Type: ${suggestion.type}")
+                        MetaChip(label = "Status: ${suggestion.status}")
+                    }
 
-            Text(
-                text = suggestion.content,
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-            Text(
-                text = "Created: ${suggestion.created_at}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            suggestion.reviewed_at?.let {
-                Text(
-                    text = "Reviewed: $it",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            suggestion.restaurant?.let { restaurant ->
-                Text(
-                    text = "Restaurant",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(text = restaurant.name, style = MaterialTheme.typography.bodyMedium)
-                if (!restaurant.location.isNullOrBlank()) {
                     Text(
-                        text = restaurant.location,
+                        text = suggestion.content,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    Text(
+                        text = "Created: ${suggestion.created_at}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    suggestion.reviewed_at?.let {
+                        Text(
+                            text = "Reviewed: $it",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            suggestion.review_comment?.takeIf { it.isNotBlank() }?.let { reviewComment ->
+                Surface(
+                    color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.4f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "Review Comment",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = reviewComment,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontStyle = FontStyle.Italic
+                        )
+                    }
+                }
+            }
+
+            suggestion.restaurant?.let { restaurant ->
+                SectionCard(title = "Restaurant") {
+                    Text(text = restaurant.name, style = MaterialTheme.typography.bodyMedium)
+                    if (!restaurant.location.isNullOrBlank()) {
+                        Text(
+                            text = restaurant.location,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 
             suggestion.food?.let { food ->
-                Text(
-                    text = "Food",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    if (!food.image.isNullOrBlank()) {
-                        AsyncImage(
-                            model = food.image.toAbsoluteImageUrl(),
-                            contentDescription = food.name,
-                            modifier = Modifier
-                                .size(64.dp)
-                                .clip(RoundedCornerShape(8.dp)),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text(text = food.name, style = MaterialTheme.typography.bodyMedium)
-                        if (!food.description.isNullOrBlank()) {
-                            Text(
-                                text = food.description,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                SectionCard(title = "Food") {
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        if (!food.image.isNullOrBlank()) {
+                            AsyncImage(
+                                model = food.image.toAbsoluteImageUrl(),
+                                contentDescription = food.name,
+                                modifier = Modifier
+                                    .size(68.dp)
+                                    .clip(RoundedCornerShape(8.dp)),
+                                contentScale = ContentScale.Crop
                             )
+                        }
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(text = food.name, style = MaterialTheme.typography.bodyMedium)
+                            if (!food.description.isNullOrBlank()) {
+                                Text(
+                                    text = food.description,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
                 }
@@ -133,21 +167,18 @@ fun SuggestionDetailScreen(
 
             val images = suggestion.images.orEmpty()
             if (images.isNotEmpty()) {
-                Text(
-                    text = "Images",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold
-                )
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(images) { image ->
-                        AsyncImage(
-                            model = image.toAbsoluteImageUrl(),
-                            contentDescription = "suggestion-image",
-                            modifier = Modifier
-                                .size(96.dp)
-                                .clip(RoundedCornerShape(8.dp)),
-                            contentScale = ContentScale.Crop
-                        )
+                SectionCard(title = "Images") {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(images) { image ->
+                            AsyncImage(
+                                model = image.toAbsoluteImageUrl(),
+                                contentDescription = "suggestion-image",
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .clip(RoundedCornerShape(8.dp)),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                     }
                 }
             }
@@ -167,6 +198,31 @@ private fun MetaChip(label: String) {
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSecondaryContainer
         )
+    }
+}
+
+@Composable
+private fun SectionCard(
+    title: String,
+    content: @Composable () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold
+            )
+            content()
+        }
     }
 }
 
