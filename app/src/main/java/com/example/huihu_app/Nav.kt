@@ -1,6 +1,7 @@
 package com.example.huihu_app
 
 import androidx.navigation3.runtime.NavKey
+import com.example.huihu_app.data.model.Suggestion
 import com.example.huihu_app.data.model.Topic
 import kotlinx.serialization.Serializable
 
@@ -19,6 +20,8 @@ sealed interface Nav {
     object Suggestion: Nav, NavKey
     @Serializable
     object AddSuggestion: Nav, NavKey
+    @Serializable
+    data class SuggestionDetail(val suggestion: com.example.huihu_app.data.model.Suggestion): Nav, NavKey
     @Serializable
     data class TopicDetail(val topic: Topic): Nav, NavKey
     @Serializable

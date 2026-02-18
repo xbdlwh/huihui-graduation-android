@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -53,6 +54,7 @@ fun SuggestionScreen(
     token: String,
     onBack: () -> Unit,
     onAddSuggestion: () -> Unit,
+    onOpenSuggestion: (Suggestion) -> Unit,
     viewModel: SuggestionViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -135,7 +137,10 @@ fun SuggestionScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(uiState.suggestions, key = { it.id }) { suggestion ->
-                        SuggestionItem(suggestion)
+                        SuggestionItem(
+                            suggestion = suggestion,
+                            onClick = { onOpenSuggestion(suggestion) }
+                        )
                     }
                 }
             }
@@ -144,9 +149,15 @@ fun SuggestionScreen(
 }
 
 @Composable
-private fun SuggestionItem(suggestion: Suggestion) {
+private fun SuggestionItem(
+    suggestion: Suggestion,
+    onClick: () -> Unit
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(14.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
