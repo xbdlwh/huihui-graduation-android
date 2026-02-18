@@ -2,11 +2,14 @@ package com.example.huihu_app.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -25,6 +28,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,6 +37,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import com.example.huihu_app.AppContainer
 import com.example.huihu_app.data.model.Suggestion
 import com.example.huihu_app.ui.AppViewModelProvider
 import com.example.huihu_app.ui.viewModel.SuggestionViewModel
@@ -157,6 +164,50 @@ private fun SuggestionItem(suggestion: Suggestion) {
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.primary
             )
+            Text(
+                text = suggestion.type,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            val food = suggestion.food
+            val restaurant = suggestion.restaurant
+            if (food != null && restaurant != null) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    if (!food.image.isNullOrBlank()) {
+                        AsyncImage(
+                            model = food.image.toAbsoluteImageUrl(),
+                            contentDescription = food.name,
+                            modifier = Modifier
+                                .size(52.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(
+                            text = food.name,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Text(
+                            text = restaurant.name,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
         }
     }
+}
+
+private fun String.toAbsoluteImageUrl(): String {
+    if (startsWith("http://") || startsWith("https://")) return this
+    val host = AppContainer.BASE_URL.trimEnd('/')
+    val path = if (startsWith("/")) this else "/$this"
+    return host + path
 }
