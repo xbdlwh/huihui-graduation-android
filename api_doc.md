@@ -582,6 +582,167 @@ Response (error)
 
 ---
 
+### GET /suggestion/{suggestion_id}
+Get one suggestion by id.
+
+Request
+- Method: `GET`
+- Path: `/suggestion/{suggestion_id}`
+- Headers:
+- `Authorization: Bearer <jwt>`
+- Path param:
+- `suggestion_id`: number
+
+Response (success)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 200,
+  "message": "ok",
+  "data": {
+    "id": 123,
+    "content": "Please add this new dish.",
+    "images": ["/static/uploads/suggestion-1.jpg", "/static/uploads/suggestion-2.jpg"],
+    "type": "ADD_FOOD",
+    "status": "PENDING",
+    "food": null,
+    "restaurant": {
+      "id": 2,
+      "name": "Sunset Noodle House",
+      "description": "Hand-pulled noodles and light broths.",
+      "location": "Downtown",
+      "image": "https://cdn.example.com/restaurants/sunset-noodle.jpg"
+    },
+    "reviewer_id": null,
+    "review_comment": null,
+    "user_id": 3,
+    "created_at": "2026-02-18T10:00:00+00:00",
+    "reviewed_at": null
+  }
+}
+```
+
+Response (error)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 500,
+  "message": "SqlError(RowNotFound) or SqlError(...) or JwtError(...)"
+}
+```
+
+---
+
+### GET /suggestion/list
+List all suggestions with pagination (root only).
+
+Request
+- Method: `GET`
+- Path: `/suggestion/list`
+- Headers:
+- `Authorization: Bearer <jwt>`
+- Query:
+- `page`: number, optional, default `1`
+- `page_size`: number, optional, default `10`, range `1..100`
+- `status`: string, optional, enum `PENDING | APPROVED | REJECTED | PREPARING | PROCESSING | FINISHED`
+- `type`: string, optional, enum `ADD_FOOD | UPDATE_FOOD | OTHER`
+
+Access
+- Only root user can access (`user_id = 1`).
+
+Response (success)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 200,
+  "message": "ok",
+  "data": [
+    {
+      "id": 123,
+      "content": "Please add this new dish.",
+      "images": ["/static/uploads/suggestion-1.jpg", "/static/uploads/suggestion-2.jpg"],
+      "type": "ADD_FOOD",
+      "status": "PENDING",
+      "food": null,
+      "restaurant": {
+        "id": 2,
+        "name": "Sunset Noodle House",
+        "description": "Hand-pulled noodles and light broths.",
+        "location": "Downtown",
+        "image": "https://cdn.example.com/restaurants/sunset-noodle.jpg"
+      },
+      "reviewer_id": null,
+      "review_comment": null,
+      "user_id": 3,
+      "created_at": "2026-02-18T10:00:00+00:00",
+      "reviewed_at": null
+    }
+  ]
+}
+```
+
+Response (error)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 500,
+  "message": "PermissionDenied(...) or SqlError(...) or JwtError(...)"
+}
+```
+
+---
+
+### POST /suggestion/review
+Approve or reject one suggestion (root only).
+
+Request
+- Method: `POST`
+- Path: `/suggestion/review`
+- Headers:
+- `Authorization: Bearer <jwt>`
+- Body:
+```json
+{
+  "suggestion_id": 123,
+  "status": "APPROVED",
+  "review_comment": "Looks good, will schedule implementation."
+}
+```
+
+Notes
+- `status` enum: `APPROVED | REJECTED`.
+- Only `PENDING` suggestion can be reviewed.
+
+Access
+- Only root user can access (`user_id = 1`).
+
+Response (success)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 200,
+  "message": "ok",
+  "data": null
+}
+```
+
+Response (error)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 500,
+  "message": "PermissionDenied(...) or SqlError(RowNotFound) or JwtError(...)"
+}
+```
+
+---
+
 ### POST /auth/register
 Request
 - Method: `POST`
