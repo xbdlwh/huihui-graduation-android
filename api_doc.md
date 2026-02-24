@@ -183,6 +183,7 @@ Request
 - `Authorization: Bearer <jwt>`
 - Path param:
 - `topic_id`: number
+- Behavior: excludes comments with `deleted = true`.
 
 Response (success)
 - Status: `200`
@@ -1640,7 +1641,7 @@ Request
 - Query:
 - `page`: number, optional, default `1`
 - Body: none
-- Behavior: only returns topics with `is_top = true`.
+- Behavior: only returns topics with `is_top = true` and `deleted = false`.
 
 Response (success)
 - Status: `200`
@@ -1678,6 +1679,96 @@ Response (error)
 {
   "code": 500,
   "message": "SqlError(...)"
+}
+```
+
+---
+
+### GET /topic/my
+List all topics posted by current user (no pagination).
+
+Request
+- Method: `GET`
+- Path: `/topic/my`
+- Headers:
+- `Authorization: Bearer <jwt>`
+- Body: none
+- Behavior: excludes topics with `deleted = true`.
+
+Response (success)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 200,
+  "message": "ok",
+  "data": [
+    {
+      "id": 1,
+      "user_id": 3,
+      "title": "My topic",
+      "content": "Topic content",
+      "images": ["/static/uploads/a.jpg", "/static/uploads/b.jpg"],
+      "create_at": "2026-02-13T09:30:00+00:00",
+      "user_info": {
+        "id": 3,
+        "name": "alice",
+        "email": "alice@example.com",
+        "profile": "https://cdn.example.com/avatar.jpg"
+      },
+      "comment_count": 12,
+      "like_count": 34,
+      "liked": true
+    }
+  ]
+}
+```
+
+Response (error)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 500,
+  "message": "SqlError(...) or JwtError(...)"
+}
+```
+
+---
+
+### POST /topic/delete/{topic_id}
+Soft-delete one topic.
+
+Request
+- Method: `POST`
+- Path: `/topic/delete/{topic_id}`
+- Headers:
+- `Authorization: Bearer <jwt>`
+- Path param:
+- `topic_id`: number
+
+Behavior
+- Only topic owner can delete.
+- Set `deleted = true`.
+
+Response (success)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 200,
+  "message": "ok",
+  "data": null
+}
+```
+
+Response (error)
+- Status: `200`
+- Body:
+```json
+{
+  "code": 500,
+  "message": "SqlError(RowNotFound) or SqlError(...) or JwtError(...)"
 }
 ```
 
