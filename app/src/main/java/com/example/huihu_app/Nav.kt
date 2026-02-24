@@ -17,6 +17,8 @@ sealed interface Nav {
     @Serializable
     object FoodTrack: Nav, NavKey
     @Serializable
+    object FoodLiked: Nav, NavKey
+    @Serializable
     object TopicManage: Nav, NavKey
     @Serializable
     object Suggestion: Nav, NavKey

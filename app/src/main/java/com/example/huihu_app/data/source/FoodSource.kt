@@ -6,6 +6,7 @@ import com.example.huihu_app.data.model.Food
 import com.example.huihu_app.data.model.FoodReactionCount
 import com.example.huihu_app.data.model.FoodReactionRequest
 import com.example.huihu_app.data.model.FoodTag
+import com.example.huihu_app.data.model.LikedFood
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -38,4 +39,9 @@ interface FoodSource {
     suspend fun topTags(
         @Header("Authorization") token: String
     ): ApiResponse<List<FoodTag>>
+
+    @GET("/food/liked")
+    suspend fun likedFoods(
+        @Header("Authorization") token: String
+    ): ApiResponse<List<LikedFood>>
 }

@@ -40,6 +40,7 @@ fun HomeScreen(
     onWriteComment: (Int) -> Unit,
     onOpenTopicDetail: (Topic) -> Unit,
     onEditProfile: () -> Unit,
+    onFoodLiked: () -> Unit,
     onTopicManage: () -> Unit,
     onSuggestion: () -> Unit,
     onFoodTrack: () -> Unit,
@@ -95,6 +96,7 @@ fun HomeScreen(
                 else -> MineScreen(
                     token = token,
                     onEditProfile = onEditProfile,
+                    onFoodLiked = onFoodLiked,
                     onTopicManage = onTopicManage,
                     onSuggestion = onSuggestion,
                     onFoodTrack = onFoodTrack,

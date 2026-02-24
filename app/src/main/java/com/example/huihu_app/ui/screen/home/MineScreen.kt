@@ -56,6 +56,7 @@ import com.example.huihu_app.ui.viewModel.MineViewModel
 fun MineScreen(
     token: String,
     onEditProfile: () -> Unit,
+    onFoodLiked: () -> Unit,
     onTopicManage: () -> Unit,
     onSuggestion: () -> Unit,
     onFoodTrack: () -> Unit,
@@ -97,7 +98,8 @@ fun MineScreen(
         StatsCard(
             decisionSuccessCount = uiState.likeCount,
             decisionFailureCount = uiState.dislikeCount,
-            tags = uiState.topTagNames
+            tags = uiState.topTagNames,
+            onOpenDecisionSuccess = onFoodLiked
         )
 
         if (uiState.error != null) {
@@ -189,7 +191,8 @@ private fun String.toAbsoluteImageUrl(): String {
 fun StatsCard(
     decisionSuccessCount: Int,
     decisionFailureCount: Int,
-    tags: List<String>
+    tags: List<String>,
+    onOpenDecisionSuccess: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -214,7 +217,10 @@ fun StatsCard(
                 // 可点击的灰色文本
                 if (decisionSuccessCount > 0) {
                     Row(
-                        Modifier.padding(6.dp).clip(RoundedCornerShape(5.dp)).clickable(onClick = {}),
+                        Modifier
+                            .padding(6.dp)
+                            .clip(RoundedCornerShape(5.dp))
+                            .clickable(onClick = onOpenDecisionSuccess),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
