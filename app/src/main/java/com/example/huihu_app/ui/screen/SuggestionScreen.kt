@@ -86,12 +86,12 @@ fun SuggestionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Suggestion") },
+                title = { Text("建议") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "返回"
                         )
                     }
                 },
@@ -99,7 +99,7 @@ fun SuggestionScreen(
                     IconButton(onClick = onAddSuggestion) {
                         Icon(
                             imageVector = Icons.Filled.Add,
-                            contentDescription = "Add suggestion"
+                            contentDescription = "新增建议"
                         )
                     }
                 }
@@ -127,11 +127,11 @@ fun SuggestionScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = uiState.error ?: "Failed to load suggestions",
+                        text = uiState.error ?: "加载建议失败",
                         color = MaterialTheme.colorScheme.error
                     )
                     Button(onClick = { viewModel.loadMySuggestions(token) }) {
-                        Text("Retry")
+                        Text("重试")
                     }
                 }
             }
@@ -251,7 +251,7 @@ private fun SuggestionItemWithoutFood(
                     }
                 } else {
                     Text(
-                        text = "Suggestion",
+                        text = "建议",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
