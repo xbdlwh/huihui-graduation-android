@@ -28,7 +28,6 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
 
     val backStack = rememberNavBackStack()
     var authToken by rememberSaveable { mutableStateOf<String?>(null) }
-
     LaunchedEffect(authState) {
         backStack.clear()
         when(authState) {
@@ -51,7 +50,7 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
 
     if (!backStack.isEmpty()) {
         NavDisplay(
-            modifier = Modifier.background(color= MaterialTheme.colorScheme.primaryContainer),
+            modifier = Modifier.background(color= MaterialTheme.colorScheme.background),
             backStack = backStack,
             entryProvider = entryProvider {
                 entry<Nav.Login>() {

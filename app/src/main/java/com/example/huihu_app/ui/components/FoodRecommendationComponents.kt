@@ -38,6 +38,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -106,42 +107,59 @@ fun FoodCardContent(
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .height(320.dp)
         ) {
             AsyncImage(
                 model = AppContainer.BASE_URL + food.image,
                 contentDescription = food.name,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(230.dp)
-                    .clip(RoundedCornerShape(18.dp)),
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
-            Text(
-                text = food.name,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = food.description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis
-            )
-            val priceText = food.price?.let { price ->
-                if (price % 1.0 == 0.0) "¥${price.toInt()}" else "¥$price"
-            } ?: "待定"
-            Text(
-                text = "价格：$priceText",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.primary
-            )
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.62f)
+                            )
+                        )
+                    )
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = food.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    )
+                    Text(
+                        text = food.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.88f),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    val priceText = food.price?.let { price ->
+                        if (price % 1.0 == 0.0) "¥${price.toInt()}" else "¥$price"
+                    } ?: "待定"
+                    Text(
+                        text = "价格：$priceText",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
+                }
+            }
         }
     }
 }

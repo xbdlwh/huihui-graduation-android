@@ -198,7 +198,7 @@ fun StatsCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),  // 圆角
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)  // 白色背景
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)  // 白色背景
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -259,7 +259,7 @@ fun StatsCard(
                     (decisionSuccessCount.toFloat() / (decisionSuccessCount + decisionFailureCount) * 100).toInt()
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Column(
@@ -285,7 +285,7 @@ fun StatsCard(
                 Spacer(modifier = Modifier.height(16.dp))
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Column(
@@ -347,7 +347,7 @@ fun ListButtonCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),  // 圆角
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)  // 白色背景
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)  // 白色背景
     ) {
         ListButton(
             text = "话题",
