@@ -23,6 +23,7 @@ class LocalStoreRepository(context: Context) {
         val IS_NEW_USER = booleanPreferencesKey("is_new_user")
         val OPEN_FOOD_TAB_ONCE = booleanPreferencesKey("open_food_tab_once")
         val TODAY_FOOD_ID = intPreferencesKey("today_food_id")
+        val RANDOM_MODE_ENABLED = booleanPreferencesKey("random_mode_enabled")
     }
 
     val authState = dataStore.data.map {
@@ -34,6 +35,10 @@ class LocalStoreRepository(context: Context) {
                  isNewUser = it[IS_NEW_USER] ?: false
              )
         }
+    }
+
+    val isRandomMode = dataStore.data.map {
+        it[RANDOM_MODE_ENABLED] ?: false
     }
 
     suspend fun saveToken(token: String, isNewUser: Boolean) {
@@ -80,6 +85,12 @@ class LocalStoreRepository(context: Context) {
     suspend fun clearTodayFoodId() {
         dataStore.edit {
             it.remove(TODAY_FOOD_ID)
+        }
+    }
+
+    suspend fun setRandomMode(enabled: Boolean) {
+        dataStore.edit {
+            it[RANDOM_MODE_ENABLED] = enabled
         }
     }
 }

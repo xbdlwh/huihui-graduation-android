@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -24,6 +25,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -143,8 +145,19 @@ fun HomeScreen(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "这里可以放推荐筛选和偏好设置。"
+                    text = "推荐设置"
                 )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "随机模式")
+                    Switch(
+                        checked = uiState.isRandomMode,
+                        onCheckedChange = viewModel::setRandomMode
+                    )
+                }
                 Button(
                     onClick = { showSettingsSheet = false },
                     modifier = Modifier.fillMaxWidth()

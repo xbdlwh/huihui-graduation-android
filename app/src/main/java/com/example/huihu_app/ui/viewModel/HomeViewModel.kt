@@ -6,11 +6,13 @@ import com.example.huihu_app.data.repository.FoodRepository
 import com.example.huihu_app.data.repository.LocalStoreRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class HomeUiState(
-    val selectedTab: Int = 1
+    val selectedTab: Int = 1,
+    val isRandomMode: Boolean = false
 )
 
 class HomeViewModel(
@@ -22,7 +24,13 @@ class HomeViewModel(
     val uiState = _uiState.asStateFlow()
 
     init {
-
+        viewModelScope.launch {
+            localStoreRepository.isRandomMode.collectLatest { enabled ->
+                _uiState.update {
+                    it.copy(isRandomMode = enabled)
+                }
+            }
+        }
     }
 
     fun selectTab(tab: Int) {
@@ -35,6 +43,12 @@ class HomeViewModel(
         viewModelScope.launch {
             foodRepository.clearCache()
             localStoreRepository.logout()
+        }
+    }
+
+    fun setRandomMode(enabled: Boolean) {
+        viewModelScope.launch {
+            localStoreRepository.setRandomMode(enabled)
         }
     }
 }
