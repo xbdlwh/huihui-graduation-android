@@ -125,6 +125,9 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                 entry<Nav.SuggestionDetail> { nav ->
                     SuggestionDetailScreen(
                         suggestion = nav.suggestion,
+                        onOpenImagePreview = { images, index ->
+                            backStack.add(Nav.ImagePreview(images = images, index = index))
+                        },
                         onBack = {
                             if (backStack.size > 1) {
                                 backStack.removeLast()
@@ -173,7 +176,23 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                             }
                         },
                         onWriteComment = { topicId -> backStack.add(Nav.WriteComment(topicId)) },
-                        onOpenTopicDetail = { topic -> backStack.add(Nav.TopicDetail(topic)) }
+                        onOpenTopicDetail = { topic -> backStack.add(Nav.TopicDetail(topic)) },
+                        onOpenImagePreview = { images, index ->
+                            backStack.add(Nav.ImagePreview(images = images, index = index))
+                        }
+                    )
+                }
+                entry<Nav.ImagePreview> { nav ->
+                    ImagePreviewScreen(
+                        images = nav.images,
+                        index = nav.index,
+                        onBack = {
+                            if (backStack.size > 1) {
+                                backStack.removeLast()
+                            } else {
+                                backStack.add(Nav.Home)
+                            }
+                        }
                     )
                 }
                 entry<Nav.CreateTopic>() {

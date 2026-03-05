@@ -63,6 +63,7 @@ fun TopicDetailScreen(
     onBack: () -> Unit,
     onWriteComment: (Int) -> Unit,
     onOpenTopicDetail: (Topic) -> Unit,
+    onOpenImagePreview: (List<String>, Int) -> Unit,
     viewModel: TopicDetailViewModel = viewModel(
         key = "topic_detail_${topic.id}",
         factory = AppViewModelProvider.FACTORY
@@ -120,7 +121,8 @@ fun TopicDetailScreen(
                     onToggleLike = { viewModel.onToggleLike(token, topic) },
                     onCommentClick = { onWriteComment(topic.id) },
                     onTopicClick = null,
-                    showTitle = true
+                    showTitle = true,
+                    onOpenImagePreview = onOpenImagePreview
                 )
             }
             item {
@@ -168,7 +170,8 @@ fun TopicDetailScreen(
                         onToggleLike = { viewModel.onToggleLike(token, comment) },
                         onCommentClick = { onWriteComment(comment.id) },
                         onTopicClick = { onOpenTopicDetail(comment) },
-                        showTitle = false
+                        showTitle = false,
+                        onOpenImagePreview = onOpenImagePreview
                     )
                 }
             }
@@ -184,7 +187,8 @@ private fun TopicCard(
     onToggleLike: () -> Unit,
     onCommentClick: () -> Unit,
     onTopicClick: (() -> Unit)?,
-    showTitle: Boolean
+    showTitle: Boolean,
+    onOpenImagePreview: (List<String>, Int) -> Unit
 ) {
     val liked = likeUi?.liked ?: topic.liked
     val likeCount = likeUi?.likeCount ?: topic.like_count
@@ -228,13 +232,15 @@ private fun TopicCard(
                 val images = topic.images.orEmpty()
                 if (images.isNotEmpty()) {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(images) { imageUrl ->
+                        items(images.size) { imageIndex ->
+                            val imageUrl = images[imageIndex]
                             AsyncImage(
                                 model = imageUrl.toAbsoluteImageUrl(),
                                 contentDescription = topic.title,
                                 modifier = Modifier
                                     .size(80.dp)
-                                    .clip(RoundedCornerShape(8.dp)),
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .clickable { onOpenImagePreview(images, imageIndex) },
                                 contentScale = ContentScale.Crop
                             )
                         }

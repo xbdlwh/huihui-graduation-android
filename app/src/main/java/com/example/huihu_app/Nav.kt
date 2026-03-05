@@ -25,6 +25,8 @@ sealed interface Nav {
     @Serializable
     object AddSuggestion: Nav, NavKey
     @Serializable
+    data class ImagePreview(val images: List<String>, val index: Int): Nav, NavKey
+    @Serializable
     data class SuggestionDetail(val suggestion: com.example.huihu_app.data.model.Suggestion): Nav, NavKey
     @Serializable
     data class TopicDetail(val topic: Topic): Nav, NavKey

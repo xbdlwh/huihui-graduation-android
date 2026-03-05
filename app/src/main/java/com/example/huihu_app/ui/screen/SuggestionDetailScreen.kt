@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -39,6 +40,7 @@ import com.example.huihu_app.data.model.Suggestion
 @Composable
 fun SuggestionDetailScreen(
     suggestion: Suggestion,
+    onOpenImagePreview: (List<String>, Int) -> Unit,
     onBack: () -> Unit
 ) {
     Scaffold(
@@ -169,13 +171,15 @@ fun SuggestionDetailScreen(
             if (images.isNotEmpty()) {
                 SectionCard(title = "图片") {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(images) { image ->
+                        items(images.size) { imageIndex ->
+                            val image = images[imageIndex]
                             AsyncImage(
                                 model = image.toAbsoluteImageUrl(),
                                 contentDescription = "建议图片",
                                 modifier = Modifier
                                     .size(100.dp)
-                                    .clip(RoundedCornerShape(8.dp)),
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .clickable { onOpenImagePreview(images, imageIndex) },
                                 contentScale = ContentScale.Crop
                             )
                         }
