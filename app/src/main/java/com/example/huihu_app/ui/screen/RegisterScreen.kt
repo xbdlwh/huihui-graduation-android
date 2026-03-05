@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,6 +34,7 @@ fun RegisterScreen(
     viewModel: AuthViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val colorScheme = MaterialTheme.colorScheme
     Scaffold { paddingValues ->
         Box(
             modifier = Modifier
@@ -41,9 +42,9 @@ fun RegisterScreen(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFFEFF6FF),
-                            Color(0xFFF8FAFC),
-                            Color(0xFFFFFFFF)
+                            colorScheme.primaryContainer.copy(alpha = 0.22f),
+                            colorScheme.secondaryContainer.copy(alpha = 0.16f),
+                            colorScheme.background
                         )
                     )
                 )
@@ -54,7 +55,7 @@ fun RegisterScreen(
                     .align(Alignment.TopEnd)
                     .padding(top = 36.dp, end = 24.dp)
                     .clip(CircleShape)
-                    .background(Color(0x332563EB))
+                    .background(colorScheme.primary.copy(alpha = 0.2f))
                     .fillMaxWidth(0.22f)
                     .height(96.dp)
             )
@@ -63,7 +64,7 @@ fun RegisterScreen(
                     .align(Alignment.TopStart)
                     .padding(top = 110.dp, start = 20.dp)
                     .clip(RoundedCornerShape(24.dp))
-                    .background(Color(0x2614B8A6))
+                    .background(colorScheme.tertiary.copy(alpha = 0.15f))
                     .fillMaxWidth(0.3f)
                     .height(72.dp)
             )
@@ -81,7 +82,7 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = "注册后即可开始你的饮食决策之旅",
-                    color = Color(0xFF475569)
+                    color = colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 RegisterForm(
