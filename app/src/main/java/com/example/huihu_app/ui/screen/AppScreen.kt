@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,7 +25,7 @@ import com.example.huihu_app.ui.viewModel.AppViewModel
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider.FACTORY)) {
-    val authState by viewModel.authState.collectAsStateWithLifecycle(Nav.Splash)
+    val authState by viewModel.authState.collectAsState()
 
     val backStack = rememberNavBackStack()
     var authToken by rememberSaveable { mutableStateOf<String?>(null) }

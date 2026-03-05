@@ -219,10 +219,10 @@ private fun TopicCard(
                     color = MaterialTheme.colorScheme.primary
                 )
                 if (showTitle) {
-                    Text(
-                        text = topic.title,
-                        style = MaterialTheme.typography.titleMedium
-                    )
+//                    Text(
+//                        text = topic.title,
+//                        style = MaterialTheme.typography.titleMedium
+//                    )
                 }
                 Text(
                     text = topic.content,
@@ -238,7 +238,7 @@ private fun TopicCard(
                                 model = imageUrl.toAbsoluteImageUrl(),
                                 contentDescription = topic.title,
                                 modifier = Modifier
-                                    .size(80.dp)
+                                    .size(96.dp)
                                     .clip(RoundedCornerShape(8.dp))
                                     .clickable { onOpenImagePreview(images, imageIndex) },
                                 contentScale = ContentScale.Crop

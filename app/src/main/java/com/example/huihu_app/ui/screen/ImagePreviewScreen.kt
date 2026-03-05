@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,25 +49,28 @@ fun ImagePreviewScreen(
     Scaffold(
         containerColor = Color.Black,
         topBar = {
-            TopAppBar(
-                title = {
-                    if (images.isNotEmpty()) {
-                        Text(
-                            text = "${pagerState.currentPage + 1} / ${images.size}",
-                            color = Color.White
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
-                            tint = Color.White
-                        )
-                    }
-                }
-            )
+//            TopAppBar(
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+//                ),
+//                title = {
+//                    if (images.isNotEmpty()) {
+//                        Text(
+//                            text = "${pagerState.currentPage + 1} / ${images.size}",
+//                            color = Color.White
+//                        )
+//                    }
+//                },
+//                navigationIcon = {
+//                    IconButton(onClick = onBack) {
+//                        Icon(
+//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                            contentDescription = "返回",
+//                            tint = Color.White
+//                        )
+//                    }
+//                }
+//            )
         }
     ) { paddingValues ->
         if (images.isEmpty()) {
