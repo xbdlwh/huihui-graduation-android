@@ -96,34 +96,62 @@ fun RegisterForm(
     var userName by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    Card(modifier) {
-        Column {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.94f))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 18.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("邮箱") }
+                label = { Text("邮箱") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = userName,
                 onValueChange = { userName = it },
-                label = { Text("用户名") }
+                label = { Text("用户名") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("密码") }
+                label = { Text("密码") },
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth()
             )
             Button(
                 onClick = { onRegister(email, userName, password) },
-                enabled = !uiState.isLoading
+                enabled = !uiState.isLoading &&
+                    email.isNotBlank() &&
+                    userName.isNotBlank() &&
+                    password.isNotBlank(),
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("注册")
             }
-            TextButton(onClick = onLogin, enabled = !uiState.isLoading) {
+            TextButton(
+                onClick = onLogin,
+                enabled = !uiState.isLoading,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text("已有账号？去登录")
             }
-            if (uiState.error != null) {
-                Text(uiState.error)
+            uiState.error?.let { error ->
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error
+                )
             }
         }
     }
