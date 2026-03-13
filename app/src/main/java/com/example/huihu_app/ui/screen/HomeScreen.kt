@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Forum
@@ -34,6 +37,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,10 +45,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import com.example.huihu_app.AppContainer
 import com.example.huihu_app.data.model.Topic
 import com.example.huihu_app.ui.AppViewModelProvider
 import com.example.huihu_app.ui.screen.home.FoodRecommendationScreen
@@ -73,11 +82,19 @@ fun HomeScreen(
     val state = rememberLazyListState()
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(topAppBarState)
+
+    LaunchedEffect(token) {
+        viewModel.loadUserProfile(token)
+    }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             when (uiState.selectedTab) {
-                0 -> ForumTopBar(scrollBehavior = scrollBehavior)
+                0 -> ForumTopBar(
+                    profileUrl = uiState.currentUserProfileUrl,
+                    scrollBehavior = scrollBehavior
+                )
                 1 -> FoodTopBar(
                     isRandomMode = uiState.isRandomMode,
                     onOpenSettings = { showSettingsSheet = true },
@@ -196,10 +213,19 @@ private fun HomeBottomBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ForumTopBar(scrollBehavior: TopAppBarScrollBehavior) {
+private fun ForumTopBar(
+    profileUrl: String?,
+    scrollBehavior: TopAppBarScrollBehavior
+) {
     TopAppBar(
         scrollBehavior = scrollBehavior,
-        title = { Text("论坛") }
+        title = {},
+        navigationIcon = {
+            UserAvatar(
+                profileUrl = profileUrl,
+                modifier = Modifier.padding(start = 12.dp)
+            )
+        }
     )
 }
 
@@ -234,4 +260,36 @@ private fun FoodTopBar(
             }
         }
     )
+}
+
+@Composable
+private fun UserAvatar(
+    profileUrl: String?,
+    modifier: Modifier = Modifier
+) {
+    if (!profileUrl.isNullOrBlank()) {
+        AsyncImage(
+            model = profileUrl.toAbsoluteImageUrl(),
+            contentDescription = "用户头像",
+            modifier = modifier
+                .size(34.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
+    } else {
+        Box(
+            modifier = modifier
+                .size(34.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.onSurfaceVariant)
+                .alpha(0.2f)
+        )
+    }
+}
+
+private fun String.toAbsoluteImageUrl(): String {
+    if (startsWith("http://") || startsWith("https://")) return this
+    val host = AppContainer.BASE_URL.trimEnd('/')
+    val path = if (startsWith("/")) this else "/$this"
+    return host + path
 }

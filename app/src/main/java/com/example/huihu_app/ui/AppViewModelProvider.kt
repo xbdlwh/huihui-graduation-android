@@ -31,7 +31,8 @@ class AppViewModelProvider {
             initializer {
                 HomeViewModel(
                     container().localStoreRepository,
-                    container().foodRepository
+                    container().foodRepository,
+                    container().authRepository
                 )
             }
             initializer {
