@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -59,7 +61,19 @@ fun CreateTopicScreen(
             OutlinedTextField(
                 value = uiState.content,
                 onValueChange = viewModel::updateContent,
-                label = { Text("内容") },
+                placeholder = {
+                    Text(
+                        text = "请输入此刻的想法......",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                },
+                textStyle = MaterialTheme.typography.titleMedium,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    disabledBorderColor = Color.Transparent,
+                    errorBorderColor = Color.Transparent
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f, fill = false),
