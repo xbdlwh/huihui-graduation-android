@@ -87,7 +87,9 @@ fun CreateTopicScreen(
                 },
                 onRemoveImage = viewModel::removeImage,
                 isUploadingImages = uiState.isUploadingImages,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp)
             )
 
             if (uiState.error != null) {
