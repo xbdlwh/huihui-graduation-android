@@ -53,6 +53,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.example.huihu_app.AppContainer
 import com.example.huihu_app.data.model.Suggestion
+import com.example.huihu_app.data.model.statusText
+import com.example.huihu_app.data.model.typeText
 import com.example.huihu_app.ui.AppViewModelProvider
 import com.example.huihu_app.ui.viewModel.SuggestionViewModel
 
@@ -194,7 +196,7 @@ private fun SuggestionItemWithFood(
                             .aspectRatio(10f / 14f),
                         contentScale = ContentScale.Crop
                     )
-                    Text(suggestion.type, Modifier.padding(4.dp).clip(shape = RoundedCornerShape(5.dp)).background(MaterialTheme.colorScheme.primaryContainer).padding(3.dp), color = MaterialTheme.colorScheme.onPrimaryContainer, style = MaterialTheme.typography.labelSmall)
+                    Text(suggestion.typeText(), Modifier.padding(4.dp).clip(shape = RoundedCornerShape(5.dp)).background(MaterialTheme.colorScheme.primaryContainer).padding(3.dp), color = MaterialTheme.colorScheme.onPrimaryContainer, style = MaterialTheme.typography.labelSmall)
                 }
                 Column(Modifier
                     .fillMaxHeight().padding(10.dp),
@@ -209,7 +211,7 @@ private fun SuggestionItemWithFood(
                 .fillMaxHeight()
                 .padding(vertical = 10.dp)) {
                 Text(
-                    text = suggestion.status,
+                    text = suggestion.statusText(),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
@@ -252,7 +254,7 @@ private fun SuggestionItemWithoutFood(
                         color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.95f)
                     ) {
                         Text(
-                            text = suggestion.type,
+                            text = suggestion.typeText(),
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -269,7 +271,7 @@ private fun SuggestionItemWithoutFood(
                 }
 
                 Text(
-                    text = suggestion.status,
+                    text = suggestion.statusText(),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,

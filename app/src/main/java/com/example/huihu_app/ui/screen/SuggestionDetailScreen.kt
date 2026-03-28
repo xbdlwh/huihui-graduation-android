@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.huihu_app.AppContainer
 import com.example.huihu_app.data.model.Suggestion
+import com.example.huihu_app.data.model.statusText
+import com.example.huihu_app.data.model.typeText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,8 +79,8 @@ fun SuggestionDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        MetaChip(label = "类型：${suggestion.type}")
-                        MetaChip(label = "状态：${suggestion.status}")
+                        MetaChip(label = "类型：${suggestion.typeText()}")
+                        MetaChip(label = "状态：${suggestion.statusText()}")
                     }
 
                     Text(

@@ -38,3 +38,22 @@ data class SuggestionRestaurant(
     val location: String? = null,
     val image: String? = null
 )
+
+fun Suggestion.typeText(): String =
+    when (type) {
+        "ADD_FOOD" -> "新增菜品"
+        "UPDATE_FOOD" -> "更新菜品"
+        "OTHER" -> "其他"
+        else -> type
+    }
+
+fun Suggestion.statusText(): String =
+    when (status) {
+        "PENDING" -> "待处理"
+        "APPROVED" -> "已通过"
+        "REJECTED" -> "已拒绝"
+        "PREPARING" -> "准备中"
+        "PROCESSING" -> "处理中"
+        "FINISHED" -> "已完成"
+        else -> status
+    }
