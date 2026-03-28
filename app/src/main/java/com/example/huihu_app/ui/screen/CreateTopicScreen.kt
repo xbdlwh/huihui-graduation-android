@@ -3,12 +3,13 @@ package com.example.huihu_app.ui.screen
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.os.CancellationSignal
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,10 +39,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.huihu_app.ui.AppViewModelProvider
 import com.example.huihu_app.ui.components.TopicImageUploadSection
 import com.example.huihu_app.ui.viewModel.CreateTopicViewModel
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 @Composable
 fun CreateTopicScreen(
@@ -184,6 +188,7 @@ fun CreateTopicScreen(
     }
 }
 
+@RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
 private fun requestCurrentLocation(
     context: Context,
     onStart: () -> Unit,
@@ -233,17 +238,12 @@ private fun requestCurrentLocation(
 private suspend fun resolveLocationText(context: Context, location: Location): String {
     return withContext(Dispatchers.IO) {
         runCatching {
-            val geocoder = Geocoder(context, Locale.getDefault())
-            @Suppress("DEPRECATION")
-            val address = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                ?.firstOrNull()
-            listOfNotNull(
-                address?.adminArea,
-                address?.locality ?: address?.subAdminArea,
-                address?.subLocality,
-                address?.thoroughfare
-            ).distinct().joinToString("")
-                .ifBlank { "${location.latitude.formatCoord()}, ${location.longitude.formatCoord()}" }
+            fetchAmapFormattedAddress(
+                longitude = location.longitude,
+                latitude = location.latitude
+            ).ifBlank {
+                "${location.latitude.formatCoord()}, ${location.longitude.formatCoord()}"
+            }
         }.getOrElse {
             "${location.latitude.formatCoord()}, ${location.longitude.formatCoord()}"
         }
@@ -251,3 +251,35 @@ private suspend fun resolveLocationText(context: Context, location: Location): S
 }
 
 private fun Double.formatCoord(): String = String.format(Locale.US, "%.4f", this)
+
+private fun fetchAmapFormattedAddress(
+    longitude: Double,
+    latitude: Double
+): String {
+    val requestUrl = buildString {
+        append("https://restapi.amap.com/v3/geocode/regeo")
+        append("?output=json")
+        append("&location=$longitude,$latitude")
+        append("&key=1c4ac2b3fed0b7b5a8e26d2394f155d3")
+        append("&radius=1000")
+        append("&extensions=all")
+    }
+
+
+    val connection = (URL(requestUrl).openConnection() as HttpURLConnection).apply {
+        requestMethod = "GET"
+        connectTimeout = 10_000
+        readTimeout = 10_000
+    }
+
+    return try {
+        val body = connection.inputStream.bufferedReader().use { it.readText() }
+        JSONObject(body)
+            .optJSONObject("regeocode")
+            ?.optString("formatted_address")
+            .orEmpty()
+    } finally {
+        connection.disconnect()
+    }
+}
+private const val TAG = "CreateTopicScreen"
