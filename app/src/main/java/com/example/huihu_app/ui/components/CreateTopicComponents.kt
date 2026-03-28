@@ -49,6 +49,10 @@ fun TopicImageUploadSection(
     onPickImages: (List<Uri>) -> Unit,
     onRemoveImage: (Uri) -> Unit,
     isUploadingImages: Boolean,
+    showMetaSection: Boolean = true,
+    locationText: String = "点击获取位置",
+    isLocating: Boolean = false,
+    onLocationClick: () -> Unit = {},
     isPublic: Boolean = true,
     onVisibilityChange: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier
@@ -140,58 +144,61 @@ fun TopicImageUploadSection(
             }
         }
 
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(0.dp)
-        ) {
-            TopicMetaRow(
-                icon = {
-                    Icon(
-                        imageVector = Icons.Filled.LocationOn,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(18.dp)
-                    )
-                },
-                title = "所在位置",
-                trailing = {
-                    Text(
-                        text = "未设置",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            )
-
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
-
-            TopicMetaRow(
-                icon = {
-                    Icon(
-                        imageVector = if (isPublic) Icons.Filled.Public else Icons.Filled.Lock,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(18.dp)
-                    )
-                },
-                title = "谁可以看",
-                trailing = {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+        if (showMetaSection) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(0.dp)
+            ) {
+                TopicMetaRow(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.LocationOn,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    },
+                    title = "所在位置",
+                    onClick = onLocationClick,
+                    trailing = {
                         Text(
-                            text = if (isPublic) "公开" else "仅自己可见",
+                            text = if (isLocating) "定位中..." else locationText,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Switch(
-                            checked = isPublic,
-                            onCheckedChange = onVisibilityChange
-                        )
                     }
-                }
-            )
+                )
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f))
+
+                TopicMetaRow(
+                    icon = {
+                        Icon(
+                            imageVector = if (isPublic) Icons.Filled.Public else Icons.Filled.Lock,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    },
+                    title = "谁可以看",
+                    trailing = {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = if (isPublic) "公开" else "仅自己可见",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Switch(
+                                checked = isPublic,
+                                onCheckedChange = onVisibilityChange
+                            )
+                        }
+                    }
+                )
+            }
         }
 
         if (isUploadingImages) {
@@ -208,11 +215,13 @@ fun TopicImageUploadSection(
 private fun TopicMetaRow(
     icon: @Composable () -> Unit,
     title: String,
+    onClick: (() -> Unit)? = null,
     trailing: @Composable () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
             .padding(vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

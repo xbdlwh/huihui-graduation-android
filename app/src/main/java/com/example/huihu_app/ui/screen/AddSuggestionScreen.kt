@@ -127,6 +127,7 @@ fun AddSuggestionScreen(
                 onPickImages = { uris -> viewModel.onImagesPicked(context.contentResolver, uris) },
                 onRemoveImage = viewModel::removeImage,
                 isUploadingImages = uiState.isUploadingImages,
+                showMetaSection = false,
                 modifier = Modifier.fillMaxWidth()
             )
 
