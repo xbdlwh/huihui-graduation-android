@@ -166,9 +166,17 @@ private fun SuggestionTypeSelector(
             FilterChip(
                 selected = selected == type,
                 onClick = { onSelect(type) },
-                label = { Text(type.name) }
+                label = { Text(type.toDisplayName()) }
             )
         }
+    }
+}
+
+private fun SuggestionType.toDisplayName(): String {
+    return when (this) {
+        SuggestionType.ADD_FOOD -> "添加菜品"
+        SuggestionType.UPDATE_FOOD -> "更新菜品"
+        SuggestionType.OTHER -> "其他建议"
     }
 }
 

@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -135,6 +136,7 @@ fun HomeScreen(
                     token = token,
                     isRandomMode = uiState.isRandomMode
                 )
+                2 -> WeightRecordScreen()
                 else -> MineScreen(
                     token = token,
                     onEditProfile = onEditProfile,
@@ -205,6 +207,12 @@ private fun HomeBottomBar(
         NavigationBarItem(
             selected = selectedTab == 2,
             onClick = { onTabSelected(2) },
+            icon = { Icon(Icons.Filled.TrackChanges, contentDescription = "记录") },
+            label = { Text("记录") }
+        )
+        NavigationBarItem(
+            selected = selectedTab == 3,
+            onClick = { onTabSelected(3) },
             icon = { Icon(Icons.Filled.Person, contentDescription = "我的") },
             label = { Text("我的") }
         )
