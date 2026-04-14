@@ -221,6 +221,11 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                             } else {
                                 backStack.add(Nav.Home)
                             }
+                        },
+                        onBack = {
+                            if (backStack.size > 1) {
+                                backStack.removeLast()
+                            }
                         }
                     )
                 }

@@ -9,7 +9,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-g
+data class FoodAttrUiState(
+    val isLoading: Boolean = false,
+    val foodAttribute: FoodAttribute? = null,
+    val error: String? = null
+)
 
 class FoodAttrViewModel(
     private val foodRepository: FoodRepository
