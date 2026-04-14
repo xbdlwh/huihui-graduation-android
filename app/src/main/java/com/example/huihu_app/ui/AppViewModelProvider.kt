@@ -12,6 +12,7 @@ import com.example.huihu_app.ui.viewModel.CreateTopicViewModel
 import com.example.huihu_app.ui.viewModel.EditProfileViewModel
 import com.example.huihu_app.ui.viewModel.FoodRecommendationViewModel
 import com.example.huihu_app.ui.viewModel.FoodLikedViewModel
+import com.example.huihu_app.ui.viewModel.FoodAttrViewModel
 import com.example.huihu_app.ui.viewModel.ForumViewModel
 import com.example.huihu_app.ui.viewModel.HomeViewModel
 import com.example.huihu_app.ui.viewModel.MineViewModel
@@ -55,6 +56,11 @@ class AppViewModelProvider {
             }
             initializer {
                 FoodLikedViewModel(
+                    container().foodRepository
+                )
+            }
+            initializer {
+                FoodAttrViewModel(
                     container().foodRepository
                 )
             }

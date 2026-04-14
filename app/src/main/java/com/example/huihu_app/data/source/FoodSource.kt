@@ -3,6 +3,7 @@ package com.example.huihu_app.data.source
 import com.example.huihu_app.data.model.ApiResponse
 import com.example.huihu_app.data.model.ConsecutiveSuggestRequest
 import com.example.huihu_app.data.model.Food
+import com.example.huihu_app.data.model.FoodAttribute
 import com.example.huihu_app.data.model.FoodReactionCount
 import com.example.huihu_app.data.model.FoodReactionRequest
 import com.example.huihu_app.data.model.FoodTag
@@ -11,6 +12,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface FoodSource {
@@ -46,4 +48,10 @@ interface FoodSource {
     suspend fun likedFoods(
         @Header("Authorization") token: String
     ): ApiResponse<List<LikedFood>>
+
+    @GET("/food/attribute/{food_id}")
+    suspend fun foodAttribute(
+        @Header("Authorization") token: String,
+        @Path("food_id") foodId: Int
+    ): ApiResponse<FoodAttribute>
 }
