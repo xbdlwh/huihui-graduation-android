@@ -26,6 +26,9 @@ data class CreateTopicUiState(
     val title: String = "",
     val content: String = "",
     val selectedImages: List<SelectedImage> = emptyList(),
+    val locationText: String = "点击获取位置",
+    val isLocating: Boolean = false,
+    val isPublic: Boolean = true,
     val isSubmitting: Boolean = false,
     val error: String? = null,
     val created: Boolean = false
@@ -50,6 +53,22 @@ class CreateTopicViewModel(
 
     fun updateContent(content: String) {
         _uiState.update { it.copy(content = content) }
+    }
+
+    fun updateVisibility(isPublic: Boolean) {
+        _uiState.update { it.copy(isPublic = isPublic) }
+    }
+
+    fun updateLocationState(isLocating: Boolean) {
+        _uiState.update { it.copy(isLocating = isLocating) }
+    }
+
+    fun updateLocationText(locationText: String) {
+        _uiState.update { it.copy(locationText = locationText, isLocating = false, error = null) }
+    }
+
+    fun setLocationError(message: String) {
+        _uiState.update { it.copy(isLocating = false, error = message) }
     }
 
     fun onImagesPicked(contentResolver: ContentResolver, uris: List<Uri>) {
