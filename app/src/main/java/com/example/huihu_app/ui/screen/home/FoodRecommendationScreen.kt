@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,46 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.huihu_app.data.model.FoodComment
 import com.example.huihu_app.ui.AppViewModelProvider
 import com.example.huihu_app.ui.components.FoodLoadingCard
 import com.example.huihu_app.ui.components.TodayFoodActionBar
 import com.example.huihu_app.ui.components.TodayFoodCard
 import com.example.huihu_app.ui.components.TodayFoodNextAction
 import com.example.huihu_app.ui.viewModel.FoodRecommendationViewModel
-
-data class MockComment(
-    val content: String,
-    val create_time: String,
-    val number_of_thumbs: Int
-)
-
-private val mockComments = listOf(
-    MockComment(
-        content = "这家店的味道真的不错！推荐大家来试试。",
-        create_time = "2026-04-14 10:30",
-        number_of_thumbs = 12
-    ),
-    MockComment(
-        content = "价格实惠，分量也很足，下次还会再来。",
-        create_time = "2026-04-13 18:45",
-        number_of_thumbs = 8
-    ),
-    MockComment(
-        content = "环境很好，适合朋友聚会。",
-        create_time = "2026-04-12 12:20",
-        number_of_thumbs = 5
-    ),
-    MockComment(
-        content = "服务态度不错，上菜速度也快。",
-        create_time = "2026-04-11 20:00",
-        number_of_thumbs = 3
-    ),
-    MockComment(
-        content = "味道正宗，很满意的一次用餐体验！",
-        create_time = "2026-04-10 19:15",
-        number_of_thumbs = 15
-    )
-)
 
 @Composable
 fun FoodRecommendationScreen(
@@ -182,15 +150,31 @@ fun FoodRecommendationScreen(
                 )
             }
 
-            items(mockComments) { comment ->
-                CommentItem(comment = comment)
+            if (uiState.isLoadingComments) {
+                item {
+                    CircularProgressIndicator(
+//                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+            } else if (uiState.comments.isEmpty()) {
+                item {
+                    Text(
+                        text = "暂无评论",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            } else {
+                items(uiState.comments) { comment ->
+                    CommentItem(comment = comment)
+                }
             }
         }
     }
 }
 
 @Composable
-private fun CommentItem(comment: MockComment) {
+private fun CommentItem(comment: FoodComment) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
@@ -222,10 +206,14 @@ private fun CommentItem(comment: MockComment) {
                     Icon(
                         imageVector = Icons.Filled.ThumbUp,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = if (comment.thumbed) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
                     )
                     Text(
-                        text = "${comment.number_of_thumbs}",
+                        text = "${comment.thumb_count}",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

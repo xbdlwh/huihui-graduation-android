@@ -2,8 +2,10 @@ package com.example.huihu_app.data.source
 
 import com.example.huihu_app.data.model.ApiResponse
 import com.example.huihu_app.data.model.ConsecutiveSuggestRequest
+import com.example.huihu_app.data.model.CreateCommentRequest
 import com.example.huihu_app.data.model.Food
 import com.example.huihu_app.data.model.FoodAttribute
+import com.example.huihu_app.data.model.FoodComment
 import com.example.huihu_app.data.model.FoodReactionCount
 import com.example.huihu_app.data.model.FoodReactionRequest
 import com.example.huihu_app.data.model.FoodTag
@@ -54,4 +56,23 @@ interface FoodSource {
         @Header("Authorization") token: String,
         @Path("food_id") foodId: Int
     ): ApiResponse<FoodAttribute>
+
+    @GET("/food/{food_id}/comments")
+    suspend fun foodComments(
+        @Header("Authorization") token: String,
+        @Path("food_id") foodId: Int
+    ): ApiResponse<List<FoodComment>>
+
+    @POST("/food/{food_id}/comments")
+    suspend fun createFoodComment(
+        @Header("Authorization") token: String,
+        @Path("food_id") foodId: Int,
+        @Body request: CreateCommentRequest
+    ): ApiResponse<FoodComment>
+
+    @POST("/food/comments/{comment_id}/thumb")
+    suspend fun toggleCommentThumb(
+        @Header("Authorization") token: String,
+        @Path("comment_id") commentId: Int
+    ): ApiResponse<Boolean>
 }

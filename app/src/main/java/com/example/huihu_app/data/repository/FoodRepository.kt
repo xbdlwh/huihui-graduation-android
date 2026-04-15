@@ -2,8 +2,10 @@ package com.example.huihu_app.data.repository
 
 import com.example.huihu_app.data.model.ApiResponse
 import com.example.huihu_app.data.model.ConsecutiveSuggestRequest
+import com.example.huihu_app.data.model.CreateCommentRequest
 import com.example.huihu_app.data.model.Food
 import com.example.huihu_app.data.model.FoodAttribute
+import com.example.huihu_app.data.model.FoodComment
 import com.example.huihu_app.data.model.FoodReactionCount
 import com.example.huihu_app.data.model.FoodReactionRequest
 import com.example.huihu_app.data.model.FoodTag
@@ -89,6 +91,31 @@ class FoodRepository(
     suspend fun foodAttribute(token: String, foodId: Int): ApiResponse<FoodAttribute> =
         runCatching {
             foodSource.foodAttribute(token = "Bearer $token", foodId = foodId)
+        }.getOrElse {
+            return ApiResponse.from(it)
+        }
+
+    suspend fun foodComments(token: String, foodId: Int): ApiResponse<List<FoodComment>> =
+        runCatching {
+            foodSource.foodComments(token = "Bearer $token", foodId = foodId)
+        }.getOrElse {
+            return ApiResponse.from(it)
+        }
+
+    suspend fun createFoodComment(token: String, foodId: Int, content: String): ApiResponse<FoodComment> =
+        runCatching {
+            foodSource.createFoodComment(
+                token = "Bearer $token",
+                foodId = foodId,
+                request = CreateCommentRequest(content = content)
+            )
+        }.getOrElse {
+            return ApiResponse.from(it)
+        }
+
+    suspend fun toggleCommentThumb(token: String, commentId: Int): ApiResponse<Boolean> =
+        runCatching {
+            foodSource.toggleCommentThumb(token = "Bearer $token", commentId = commentId)
         }.getOrElse {
             return ApiResponse.from(it)
         }

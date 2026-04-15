@@ -3,6 +3,7 @@ package com.example.huihu_app.ui.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.huihu_app.data.model.Food
+import com.example.huihu_app.data.model.FoodComment
 import com.example.huihu_app.data.model.FoodReactionRequest
 import com.example.huihu_app.data.repository.FoodRepository
 import com.example.huihu_app.data.repository.LocalStoreRepository
@@ -19,7 +20,9 @@ data class FoodRecommendationUiState(
     val isRefilling: Boolean = false,
     val error: String? = null,
     val acceptedFoodId: Int? = null,
-    val feedbackMessage: String? = null
+    val feedbackMessage: String? = null,
+    val comments: List<FoodComment> = emptyList(),
+    val isLoadingComments: Boolean = false
 )
 
 class FoodRecommendationViewModel(
@@ -89,6 +92,7 @@ class FoodRecommendationViewModel(
                 feedbackMessage = "不错的选择，祝你用餐愉快。"
             )
         }
+        loadComments(current.id)
     }
 
     fun onChangeIt() {
@@ -125,6 +129,20 @@ class FoodRecommendationViewModel(
         val current = _uiState.value.currentFood ?: return
         viewModelScope.launch {
             removeCurrentAndLoadNext(current.id, null)
+        }
+    }
+
+    private fun loadComments(foodId: Int) {
+        val token = authToken ?: return
+        _uiState.update { it.copy(isLoadingComments = true) }
+        viewModelScope.launch {
+            val response = foodRepository.foodComments(token = token, foodId = foodId)
+            _uiState.update {
+                it.copy(
+                    comments = response.data.orEmpty(),
+                    isLoadingComments = false
+                )
+            }
         }
     }
 
