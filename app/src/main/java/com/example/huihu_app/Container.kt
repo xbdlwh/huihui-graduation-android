@@ -11,6 +11,7 @@ import com.example.huihu_app.data.repository.SuggestionRepository
 import com.example.huihu_app.data.repository.TopicRepository
 import com.example.huihu_app.data.repository.UserRepository
 import com.example.huihu_app.data.repository.CalorieGoalRepository
+import com.example.huihu_app.data.repository.MealRecordRepository
 import com.example.huihu_app.data.source.AuthSource
 import com.example.huihu_app.data.source.FoodSource
 import com.example.huihu_app.data.source.RestaurantSource
@@ -18,6 +19,7 @@ import com.example.huihu_app.data.source.SuggestionSource
 import com.example.huihu_app.data.source.TopicSource
 import com.example.huihu_app.data.source.UserSource
 import com.example.huihu_app.data.source.CalorieGoalSource
+import com.example.huihu_app.data.source.MealRecordSource
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
@@ -69,6 +71,10 @@ class AppContainer(context: Context) {
         retrofit.create(CalorieGoalSource::class.java)
     }
 
+    val mealRecordSource by lazy {
+        retrofit.create(MealRecordSource::class.java)
+    }
+
     val foodCacheDao by lazy {
         appDatabase.foodCacheDao()
     }
@@ -103,6 +109,10 @@ class AppContainer(context: Context) {
 
     val calorieGoalRepository by lazy {
         CalorieGoalRepository(calorieGoalSource)
+    }
+
+    val mealRecordRepository by lazy {
+        MealRecordRepository(mealRecordSource)
     }
 
     companion object {

@@ -60,6 +60,7 @@ import com.example.huihu_app.ui.screen.home.ForumScreen
 import com.example.huihu_app.ui.screen.home.MineScreen
 import com.example.huihu_app.ui.screen.home.WeightRecordScreen
 import com.example.huihu_app.ui.viewModel.HomeViewModel
+import com.example.huihu_app.ui.viewModel.MealRecordViewModel
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +78,9 @@ fun HomeScreen(
     onFoodAttr: (Int) -> Unit,
     onEditUserProfile: () -> Unit,
     onSetCalorieGoal: () -> Unit,
-    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
+    onAddMealRecord: (Int, String) -> Unit,
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.FACTORY),
+    mealRecordViewModel: MealRecordViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showSettingsSheet by remember { mutableStateOf(false) }
@@ -137,7 +140,14 @@ fun HomeScreen(
                 1 -> FoodRecommendationScreen(
                     token = token,
                     isRandomMode = uiState.isRandomMode,
-                    onFoodClick = { foodId -> onFoodAttr(foodId) }
+                    onFoodClick = { foodId -> onFoodAttr(foodId) },
+                    onAddToRecord = { foodId, mealType ->
+                        mealRecordViewModel.createMealRecord(
+                            token = token,
+                            foodId = foodId,
+                            mealType = mealType
+                        )
+                    }
                 )
                 2 -> WeightRecordScreen(
                     token = token,

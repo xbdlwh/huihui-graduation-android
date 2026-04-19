@@ -85,7 +85,8 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                         onFoodTrack = { backStack.add(Nav.FoodTrack) },
                         onFoodAttr = { foodId -> backStack.add(Nav.FoodAttr(foodId)) },
                         onEditUserProfile = { backStack.add(Nav.UserProfile) },
-                        onSetCalorieGoal = { backStack.add(Nav.CalorieGoal) }
+                        onSetCalorieGoal = { backStack.add(Nav.CalorieGoal) },
+                        onAddMealRecord = { _, _ -> }
                     )
                 }
                 entry<Nav.TopicManage>() {

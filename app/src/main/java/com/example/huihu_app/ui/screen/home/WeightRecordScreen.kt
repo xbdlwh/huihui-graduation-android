@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,22 +32,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.huihu_app.ui.AppViewModelProvider
 import com.example.huihu_app.ui.viewModel.CalorieGoalViewModel
+import com.example.huihu_app.ui.viewModel.MealRecordViewModel
 
 @Composable
 fun WeightRecordScreen(
     token: String,
     onSetCalorieGoal: () -> Unit,
-    viewModel: CalorieGoalViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
+    calorieGoalViewModel: CalorieGoalViewModel = viewModel(factory = AppViewModelProvider.FACTORY),
+    mealRecordViewModel: MealRecordViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val lifecycleOwner = LocalLifecycleOwner.current
+    val calorieGoalState by calorieGoalViewModel.uiState.collectAsState()
+    val mealRecordState by mealRecordViewModel.uiState.collectAsState()
 
     LaunchedEffect(token) {
-        viewModel.loadCalorieGoal(token)
+        calorieGoalViewModel.loadCalorieGoal(token)
+        mealRecordViewModel.loadMealRecords(token)
     }
 
     Column(
@@ -56,63 +59,112 @@ fun WeightRecordScreen(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        if (uiState.isLoading) {
+        if (calorieGoalState.isLoading || mealRecordState.isLoading) {
             CircularProgressIndicator()
         }
 
-        if (uiState.calorieGoal != null) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        // Header with calorie goal info
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = "每日目标",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = "${calorieGoalState.calorieGoal?.daily_calorie_goal?.toInt() ?: "--"} kcal",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            IconButton(onClick = onSetCalorieGoal) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "修改目标"
+                )
+            }
+        }
+
+        // Today's calorie consumption card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
+                Text(
+                    text = "今日摄入",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    verticalAlignment = Alignment.Bottom
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "每日卡路里目标",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        IconButton(onClick = onSetCalorieGoal) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "修改目标"
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "${uiState.calorieGoal?.daily_calorie_goal?.toInt() ?: 0}",
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = " kcal",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "生效日期: ${uiState.calorieGoal?.effective_from}",
-                        style = MaterialTheme.typography.bodySmall,
+                        text = "${mealRecordState.totalCaloriesToday.toInt()}",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = if (mealRecordState.totalCaloriesToday > (calorieGoalState.calorieGoal?.daily_calorie_goal ?: Double.MAX_VALUE)) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        }
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "/ ${calorieGoalState.calorieGoal?.daily_calorie_goal?.toInt() ?: 0} kcal",
+                        style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+                val goal = calorieGoalState.calorieGoal?.daily_calorie_goal ?: 1.0
+                val consumed = mealRecordState.totalCaloriesToday
+                val progress = (consumed / goal).coerceIn(0.0, 1.0).toFloat()
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(24.dp)
+                    ) {
+                        val consumedWidth = progress.coerceAtMost(1f)
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth(consumedWidth)
+                                .height(24.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (consumed > goal) {
+                                    MaterialTheme.colorScheme.error
+                                } else {
+                                    MaterialTheme.colorScheme.primary
+                                }
+                            ),
+                            shape = RoundedCornerShape(4.dp)
+                        ) {}
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "剩余 ${(goal - consumed).coerceAtLeast(0.0).toInt()} kcal",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
-        } else {
+        }
+
+        if (calorieGoalState.calorieGoal == null) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -141,9 +193,9 @@ fun WeightRecordScreen(
             }
         }
 
-        if (uiState.error != null) {
+        if (calorieGoalState.error != null || mealRecordState.error != null) {
             Text(
-                text = uiState.error ?: "",
+                text = calorieGoalState.error ?: mealRecordState.error ?: "",
                 color = MaterialTheme.colorScheme.error
             )
         }

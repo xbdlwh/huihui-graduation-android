@@ -22,6 +22,7 @@ import com.example.huihu_app.ui.viewModel.TopicDetailViewModel
 import com.example.huihu_app.ui.viewModel.TopicManageViewModel
 import com.example.huihu_app.ui.viewModel.UserViewModel
 import com.example.huihu_app.ui.viewModel.CalorieGoalViewModel
+import com.example.huihu_app.ui.viewModel.MealRecordViewModel
 
 class AppViewModelProvider {
     companion object {
@@ -119,6 +120,11 @@ class AppViewModelProvider {
             initializer {
                 CalorieGoalViewModel(
                     container().calorieGoalRepository
+                )
+            }
+            initializer {
+                MealRecordViewModel(
+                    container().mealRecordRepository
                 )
             }
         }

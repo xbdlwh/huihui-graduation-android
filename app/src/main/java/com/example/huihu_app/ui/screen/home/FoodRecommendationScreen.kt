@@ -32,6 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.huihu_app.data.model.FoodComment
 import com.example.huihu_app.ui.AppViewModelProvider
 import com.example.huihu_app.ui.components.AddCommentButton
+import com.example.huihu_app.ui.components.AddToRecordButton
 import com.example.huihu_app.ui.components.FoodLoadingCard
 import com.example.huihu_app.ui.components.TodayFoodActionBar
 import com.example.huihu_app.ui.components.TodayFoodCard
@@ -43,6 +44,7 @@ fun FoodRecommendationScreen(
     token: String,
     isRandomMode: Boolean,
     onFoodClick: (Int) -> Unit = {},
+    onAddToRecord: (Int, String) -> Unit = { _, _ -> },
     viewModel: FoodRecommendationViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -106,6 +108,14 @@ fun FoodRecommendationScreen(
                             )
                             AddCommentButton(
                                 onSubmit = { comment -> viewModel.addComment(token, comment) },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            AddToRecordButton(
+                                onAddToRecord = { mealType ->
+                                    uiState.currentFood?.id?.let { foodId ->
+                                        onAddToRecord(foodId, mealType)
+                                    }
+                                },
                                 modifier = Modifier.fillMaxWidth()
                             )
                         } else {
