@@ -76,6 +76,7 @@ fun HomeScreen(
     onFoodTrack: () -> Unit,
     onFoodAttr: (Int) -> Unit,
     onEditUserProfile: () -> Unit,
+    onSetCalorieGoal: () -> Unit,
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -138,7 +139,10 @@ fun HomeScreen(
                     isRandomMode = uiState.isRandomMode,
                     onFoodClick = { foodId -> onFoodAttr(foodId) }
                 )
-                2 -> WeightRecordScreen()
+                2 -> WeightRecordScreen(
+                    token = token,
+                    onSetCalorieGoal = onSetCalorieGoal
+                )
                 else -> MineScreen(
                     token = token,
                     onEditProfile = onEditProfile,

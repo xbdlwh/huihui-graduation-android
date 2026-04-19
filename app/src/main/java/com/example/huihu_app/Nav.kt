@@ -42,4 +42,6 @@ sealed interface Nav {
     object Splash: Nav, NavKey
     @Serializable
     object UserProfile: Nav, NavKey
+    @Serializable
+    object CalorieGoal: Nav, NavKey
 }
