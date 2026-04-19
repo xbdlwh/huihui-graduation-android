@@ -75,6 +75,7 @@ fun HomeScreen(
     onSuggestion: () -> Unit,
     onFoodTrack: () -> Unit,
     onFoodAttr: (Int) -> Unit,
+    onEditUserProfile: () -> Unit,
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -145,7 +146,8 @@ fun HomeScreen(
                     onTopicManage = onTopicManage,
                     onSuggestion = onSuggestion,
                     onFoodTrack = onFoodTrack,
-                    onLogout = viewModel::logout
+                    onLogout = viewModel::logout,
+                    onEditUserProfile = onEditUserProfile
                 )
             }
         }

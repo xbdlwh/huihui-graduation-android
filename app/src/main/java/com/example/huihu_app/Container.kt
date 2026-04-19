@@ -9,11 +9,13 @@ import com.example.huihu_app.data.repository.LocalStoreRepository
 import com.example.huihu_app.data.repository.RestaurantRepository
 import com.example.huihu_app.data.repository.SuggestionRepository
 import com.example.huihu_app.data.repository.TopicRepository
+import com.example.huihu_app.data.repository.UserRepository
 import com.example.huihu_app.data.source.AuthSource
 import com.example.huihu_app.data.source.FoodSource
 import com.example.huihu_app.data.source.RestaurantSource
 import com.example.huihu_app.data.source.SuggestionSource
 import com.example.huihu_app.data.source.TopicSource
+import com.example.huihu_app.data.source.UserSource
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
@@ -57,6 +59,10 @@ class AppContainer(context: Context) {
         retrofit.create(RestaurantSource::class.java)
     }
 
+    val userSource by lazy {
+        retrofit.create(UserSource::class.java)
+    }
+
     val foodCacheDao by lazy {
         appDatabase.foodCacheDao()
     }
@@ -85,8 +91,12 @@ class AppContainer(context: Context) {
         RestaurantRepository(restaurantSource)
     }
 
+    val userRepository by lazy {
+        UserRepository(userSource)
+    }
+
     companion object {
-        const val HOST = "192.168.1.102"
+        const val HOST = "10.12.1.68"
         const val BASE_URL = "http://$HOST:8899"
         const val BASE_URL_BACK_END = "http://$HOST:3000"
     }

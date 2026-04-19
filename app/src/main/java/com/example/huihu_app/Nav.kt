@@ -40,4 +40,6 @@ sealed interface Nav {
     object Home: Nav, NavKey
     @Serializable
     object Splash: Nav, NavKey
+    @Serializable
+    object UserProfile: Nav, NavKey
 }

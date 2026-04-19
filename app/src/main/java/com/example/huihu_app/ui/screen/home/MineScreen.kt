@@ -61,6 +61,7 @@ fun MineScreen(
     onSuggestion: () -> Unit,
     onFoodTrack: () -> Unit,
     onLogout: () -> Unit,
+    onEditUserProfile: () -> Unit,
     viewModel: MineViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -93,6 +94,12 @@ fun MineScreen(
             profileUrl = uiState.user?.profile,
             isLoading = uiState.isLoading,
             onClick = onEditProfile
+        )
+
+        UserProfileCard(
+            userProfile = uiState.userProfile,
+            isLoading = uiState.isLoading,
+            onClick = onEditUserProfile
         )
 
         StatsCard(
@@ -177,6 +184,75 @@ private fun UserInfoCard(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun UserProfileCard(
+    userProfile: com.example.huihu_app.data.model.UserProfile?,
+    isLoading: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "个人信息",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            if (userProfile != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    ProfileInfoItem(label = "身高", value = "${userProfile.height_cm} cm")
+                    ProfileInfoItem(label = "体重", value = "${userProfile.weight_kg} kg")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    ProfileInfoItem(label = "性别", value = userProfile.gender)
+                    ProfileInfoItem(label = "生日", value = userProfile.birth_date)
+                }
+            } else {
+                Text(
+                    text = if (isLoading) "加载中..." else "未设置个人信息",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfileInfoItem(label: String, value: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 

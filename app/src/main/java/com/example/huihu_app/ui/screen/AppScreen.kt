@@ -83,7 +83,8 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                         onTopicManage = { backStack.add(Nav.TopicManage) },
                         onSuggestion = { backStack.add(Nav.Suggestion) },
                         onFoodTrack = { backStack.add(Nav.FoodTrack) },
-                        onFoodAttr = { foodId -> backStack.add(Nav.FoodAttr(foodId)) }
+                        onFoodAttr = { foodId -> backStack.add(Nav.FoodAttr(foodId)) },
+                        onEditUserProfile = { backStack.add(Nav.UserProfile) }
                     )
                 }
                 entry<Nav.TopicManage>() {
@@ -251,6 +252,18 @@ fun AppScreen(viewModel: AppViewModel = viewModel(factory = AppViewModelProvider
                 }
                 entry<Nav.NewPerson>() {
                     NewPersonScreen(authToken!!)
+                }
+                entry<Nav.UserProfile>() {
+                    UserProfileScreen(
+                        token = authToken!!,
+                        onBack = {
+                            if (backStack.size > 1) {
+                                backStack.removeLast()
+                            } else {
+                                backStack.add(Nav.Home)
+                            }
+                        }
+                    )
                 }
                 entry<Nav.Splash>() {
                     SplashScreen()

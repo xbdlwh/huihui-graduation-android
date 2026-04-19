@@ -20,6 +20,7 @@ import com.example.huihu_app.ui.viewModel.NewPersonViewModel
 import com.example.huihu_app.ui.viewModel.SuggestionViewModel
 import com.example.huihu_app.ui.viewModel.TopicDetailViewModel
 import com.example.huihu_app.ui.viewModel.TopicManageViewModel
+import com.example.huihu_app.ui.viewModel.UserViewModel
 
 class AppViewModelProvider {
     companion object {
@@ -87,7 +88,8 @@ class AppViewModelProvider {
             initializer {
                 MineViewModel(
                     container().authRepository,
-                    container().foodRepository
+                    container().foodRepository,
+                    container().userRepository
                 )
             }
             initializer {
@@ -106,6 +108,11 @@ class AppViewModelProvider {
                     container().suggestionRepository,
                     container().restaurantRepository,
                     container().topicRepository
+                )
+            }
+            initializer {
+                UserViewModel(
+                    container().userRepository
                 )
             }
         }
