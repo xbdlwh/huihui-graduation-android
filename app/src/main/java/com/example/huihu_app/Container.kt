@@ -12,6 +12,8 @@ import com.example.huihu_app.data.repository.TopicRepository
 import com.example.huihu_app.data.repository.UserRepository
 import com.example.huihu_app.data.repository.CalorieGoalRepository
 import com.example.huihu_app.data.repository.MealRecordRepository
+import com.example.huihu_app.data.repository.ExerciseTypeRepository
+import com.example.huihu_app.data.repository.ExerciseRecordRepository
 import com.example.huihu_app.data.source.AuthSource
 import com.example.huihu_app.data.source.FoodSource
 import com.example.huihu_app.data.source.RestaurantSource
@@ -20,6 +22,8 @@ import com.example.huihu_app.data.source.TopicSource
 import com.example.huihu_app.data.source.UserSource
 import com.example.huihu_app.data.source.CalorieGoalSource
 import com.example.huihu_app.data.source.MealRecordSource
+import com.example.huihu_app.data.source.ExerciseTypeSource
+import com.example.huihu_app.data.source.ExerciseRecordSource
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
@@ -75,6 +79,14 @@ class AppContainer(context: Context) {
         retrofit.create(MealRecordSource::class.java)
     }
 
+    val exerciseTypeSource by lazy {
+        retrofit.create(ExerciseTypeSource::class.java)
+    }
+
+    val exerciseRecordSource by lazy {
+        retrofit.create(ExerciseRecordSource::class.java)
+    }
+
     val foodCacheDao by lazy {
         appDatabase.foodCacheDao()
     }
@@ -115,8 +127,16 @@ class AppContainer(context: Context) {
         MealRecordRepository(mealRecordSource)
     }
 
+    val exerciseTypeRepository by lazy {
+        ExerciseTypeRepository(exerciseTypeSource)
+    }
+
+    val exerciseRecordRepository by lazy {
+        ExerciseRecordRepository(exerciseRecordSource)
+    }
+
     companion object {
-        const val HOST = "10.12.1.68"
+        const val HOST = "192.168.1.216"
         const val BASE_URL = "http://$HOST:8899"
         const val BASE_URL_BACK_END = "http://$HOST:3000"
     }

@@ -147,7 +147,7 @@ fun FoodRecommendationScreen(
                 }
             }
         }
-
+// 10 15 12 25 20 15
         // Comments section
         if (uiState.currentFood != null) {
             item {

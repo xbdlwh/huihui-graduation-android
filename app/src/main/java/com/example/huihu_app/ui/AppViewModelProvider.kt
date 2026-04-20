@@ -21,8 +21,10 @@ import com.example.huihu_app.ui.viewModel.SuggestionViewModel
 import com.example.huihu_app.ui.viewModel.TopicDetailViewModel
 import com.example.huihu_app.ui.viewModel.TopicManageViewModel
 import com.example.huihu_app.ui.viewModel.UserViewModel
+import com.example.huihu_app.ui.viewModel.WeightRecordViewModel
 import com.example.huihu_app.ui.viewModel.CalorieGoalViewModel
 import com.example.huihu_app.ui.viewModel.MealRecordViewModel
+import com.example.huihu_app.ui.viewModel.ExerciseRecordViewModel
 
 class AppViewModelProvider {
     companion object {
@@ -125,6 +127,21 @@ class AppViewModelProvider {
             initializer {
                 MealRecordViewModel(
                     container().mealRecordRepository
+                )
+            }
+            initializer {
+                ExerciseRecordViewModel(
+                    container().exerciseTypeRepository,
+                    container().exerciseRecordRepository
+                )
+            }
+            initializer {
+                WeightRecordViewModel(
+                    container().calorieGoalRepository,
+                    container().mealRecordRepository,
+                    container().exerciseTypeRepository,
+                    container().exerciseRecordRepository,
+                    container().userRepository
                 )
             }
         }
