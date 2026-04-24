@@ -8,6 +8,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface MealRecordSource {
     @GET("/meal-record/")
@@ -24,4 +25,7 @@ interface MealRecordSource {
         @Header("Authorization") token: String,
         @Body request: CreateOuterMealRecordRequest
     ): ApiResponse<MealRecord>
+
+    @GET("/meal-record/recognize")
+    suspend fun recognizeFood(@Query("image") imageUrl: String): ApiResponse<Double>
 }

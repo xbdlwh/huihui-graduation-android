@@ -47,4 +47,11 @@ class MealRecordRepository(
     }.getOrElse {
         return ApiResponse.from(it)
     }
+
+    suspend fun recognizeFood(imageUrl: String): ApiResponse<Double> =
+        runCatching {
+            mealRecordSource.recognizeFood(imageUrl)
+        }.getOrElse {
+            return ApiResponse.from(it)
+        }
 }

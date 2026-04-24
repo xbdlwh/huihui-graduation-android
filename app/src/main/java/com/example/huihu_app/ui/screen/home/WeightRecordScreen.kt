@@ -72,7 +72,8 @@ fun WeightRecordScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
-        ) {
+        )
+        {
             Column {
                 Text(
                     text = "每日目标",
@@ -104,7 +105,8 @@ fun WeightRecordScreen(
             shape = RoundedCornerShape(12.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-        ) {
+        )
+        {
             Column(
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -206,7 +208,7 @@ fun WeightRecordScreen(
                         }
                     }
                 }
-            }
+}
         }
 
         Row(
@@ -218,60 +220,57 @@ fun WeightRecordScreen(
                 modifier = Modifier.weight(1f)
             )
             AddMealRecordButton(
+                modifier = Modifier.weight(1f),
                 onCreateRecord = { mealType, calories ->
                     viewModel.createMealRecord(token, mealType, calories)
                 },
-                modifier = Modifier.weight(1f)
+                topicRepository = viewModel.topic,
+                mealRecordRepository = viewModel.mealRecordRepository
             )
         }
-
-        // Exercise records section - takes remaining space
-        Column(modifier = Modifier.weight(1f)) {
-            // Tab icons for switching between exercise and meal records
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.DirectionsRun,
-                    contentDescription = "运动记录",
-                    tint = if (selectedTab == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .clickable { selectedTab = 0 }
-                        .padding(4.dp)
-                )
-                Icon(
-                    imageVector = Icons.Default.Fastfood,
-                    contentDescription = "饮食记录",
-                    tint = if (selectedTab == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .clickable { selectedTab = 1 }
-                        .padding(4.dp)
-                )
+        // Tab icons for switching between exercise and meal records
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        )
+        {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.DirectionsRun,
+                contentDescription = "运动记录",
+                tint = if (selectedTab == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .clickable { selectedTab = 0 }
+                    .padding(4.dp)
+            )
+            Icon(
+                imageVector = Icons.Default.Fastfood,
+                contentDescription = "饮食记录",
+                tint = if (selectedTab == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .clickable { selectedTab = 1 }
+                    .padding(4.dp)
+            )
+        }
+        // Scrollable records list
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            if (selectedTab == 0) {
+                // Exercise records
+                items(uiState.exerciseRecords) { record ->
+                    ExerciseRecordItem(record = record)
+                }
+            } else {
+                // Meal records
+                items(uiState.mealRecords) { record ->
+                    MealRecordItem(record = record)
+                }
             }
-
-            // Scrollable records list
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (selectedTab == 0) {
-                    // Exercise records
-                    items(uiState.exerciseRecords) { record ->
-                        ExerciseRecordItem(record = record)
-                    }
-                } else {
-                    // Meal records
-                    items(uiState.mealRecords) { record ->
-                        MealRecordItem(record = record)
-                    }
-                }
-                item {
-                    Spacer(Modifier.height(50.dp))
-                }
+            item {
+                Spacer(Modifier.height(50.dp))
             }
         }
-
         if (uiState.calorieGoal == null) {
             Card(
                 modifier = Modifier

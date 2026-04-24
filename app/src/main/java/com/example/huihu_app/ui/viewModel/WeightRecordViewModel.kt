@@ -8,6 +8,7 @@ import com.example.huihu_app.data.repository.CalorieGoalRepository
 import com.example.huihu_app.data.repository.ExerciseRecordRepository
 import com.example.huihu_app.data.repository.ExerciseTypeRepository
 import com.example.huihu_app.data.repository.MealRecordRepository
+import com.example.huihu_app.data.repository.TopicRepository
 import com.example.huihu_app.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,11 +32,13 @@ data class WeightRecordUiState(
 
 class WeightRecordViewModel(
     private val calorieGoalRepository: CalorieGoalRepository,
-    private val mealRecordRepository: MealRecordRepository,
+    val mealRecordRepository: MealRecordRepository,
     private val exerciseTypeRepository: ExerciseTypeRepository,
     private val exerciseRecordRepository: ExerciseRecordRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val topicRepository: TopicRepository
 ) : ViewModel() {
+    val topic: TopicRepository = topicRepository
     private val _uiState = MutableStateFlow(WeightRecordUiState())
     val uiState = _uiState.asStateFlow()
 

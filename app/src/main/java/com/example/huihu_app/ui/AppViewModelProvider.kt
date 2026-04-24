@@ -135,13 +135,14 @@ class AppViewModelProvider {
                     container().exerciseRecordRepository
                 )
             }
-            initializer {
+initializer {
                 WeightRecordViewModel(
                     container().calorieGoalRepository,
                     container().mealRecordRepository,
                     container().exerciseTypeRepository,
                     container().exerciseRecordRepository,
-                    container().userRepository
+                    container().userRepository,
+                    container().topicRepository
                 )
             }
         }

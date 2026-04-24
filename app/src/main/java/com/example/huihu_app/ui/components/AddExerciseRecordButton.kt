@@ -86,6 +86,7 @@ fun AddExerciseRecordContent(
     Column(
         modifier = Modifier
             .padding(16.dp)
+//            .height(600.dp)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
