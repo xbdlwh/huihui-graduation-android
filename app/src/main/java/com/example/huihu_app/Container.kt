@@ -161,7 +161,8 @@ class AppContainer(context: Context) {
     }
 
     companion object {
-        const val HOST = "mbp2.local"
+//        const val HOST = "mbp2.local"
+        const val HOST = "192.168.1.6"
         const val BASE_URL = "http://$HOST:8899"
         const val BASE_URL_BACK_END = "http://$HOST:3000"
     }

@@ -24,11 +24,12 @@ import com.example.huihu_app.ui.components.FoodLoadingCard
 import com.example.huihu_app.ui.components.FoodReactionBar
 import com.example.huihu_app.ui.components.SwipeFoodCard
 import com.example.huihu_app.ui.viewModel.NewPersonViewModel
+import kotlin.uuid.Uuid
 
 @Composable
 fun NewPersonScreen(
     token: String,
-    viewModel: NewPersonViewModel = viewModel(factory = AppViewModelProvider.FACTORY)
+    viewModel: NewPersonViewModel = viewModel(factory = AppViewModelProvider.FACTORY, key = Math.random().toString())
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
