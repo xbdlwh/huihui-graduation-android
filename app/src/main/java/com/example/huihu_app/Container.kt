@@ -28,12 +28,27 @@ import com.example.huihu_app.data.source.ExerciseRecordSource
 import com.example.huihu_app.data.source.ImageSource
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
 
 class AppContainer(context: Context) {
 
-    private val retrofit = Retrofit.Builder().baseUrl(BASE_URL)
+    val okHttpClient = OkHttpClient.Builder()
+        // 连接超时
+        .connectTimeout(10, TimeUnit.SECONDS)
+        // 读取超时
+        .readTimeout(30, TimeUnit.SECONDS)
+        // 写入超时
+        .writeTimeout(30, TimeUnit.SECONDS)
+        // 整个请求超时
+        .callTimeout(60, TimeUnit.SECONDS)
+        .build()
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .client(okHttpClient)
         .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .build()
 
@@ -146,7 +161,7 @@ class AppContainer(context: Context) {
     }
 
     companion object {
-        const val HOST = "10.12.18.88"
+        const val HOST = "mbp2.local"
         const val BASE_URL = "http://$HOST:8899"
         const val BASE_URL_BACK_END = "http://$HOST:3000"
     }

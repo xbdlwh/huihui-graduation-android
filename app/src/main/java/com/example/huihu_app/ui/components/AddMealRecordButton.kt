@@ -1,6 +1,7 @@
 package com.example.huihu_app.ui.components
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -41,10 +42,12 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
+private const val TAG = "AddMealRecordButton"
 private fun uriToTempFile(cacheDir: File, contentResolver: android.content.ContentResolver, uri: Uri): File? {
     return try {
+        Log.d(TAG, "uriToTempFile: $uri")
         val inputStream = contentResolver.openInputStream(uri) ?: return null
-        val tempFile = File.createTempFile("image_", ".jpg", cacheDir)
+        val tempFile = File.createTempFile("image_", ".jpeg", cacheDir)
         FileOutputStream(tempFile).use { outputStream ->
             inputStream.copyTo(outputStream)
         }
@@ -113,6 +116,7 @@ fun AddMealRecordContent(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         if (uri != null) {
+            Log.d(TAG, "AddMealRecordContent: $uri")
             selectedImageUri = uri
             isRecognizing = true
             errorMsg = null
